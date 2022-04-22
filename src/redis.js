@@ -38,6 +38,9 @@ export const Redis = new Vue({
             }
             console.log(message);
         },
+        subscribe(channel,action) {
+            this.subscriptions.push({channel:channel,action:action});
+        },
         onerror(error) {
             console.log(error);
         },

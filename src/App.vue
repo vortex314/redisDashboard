@@ -5,7 +5,8 @@
 </template>
 
 <script>
-import RedisWs from "./components/RedisWs.vue";
+
+import RedisWs from "./components/Grid.vue";
 export default {
   name: "App",
   components: { RedisWs },

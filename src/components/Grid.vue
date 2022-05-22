@@ -23,17 +23,14 @@
         @resized="resizedEvent"
         @moved="movedEvent"
       >
-        >
-        {{ item.i }}
-        <redis-connection></redis-connection>
-      </grid-item></grid-layout
-    >
+        <component :is="item.type" v-bind="item.params"></component> </grid-item
+    ></grid-layout>
   </div>
 </template>
 
 <script>
-import { Redis } from "../redis.js";
-import { Timer } from "../timer.js";
+import { Redis, Eventbus } from "../Redis.js";
+import { Timer } from "../Timer.js";
 import VueGridLayout from "vue-grid-layout";
 import RedisConnection from "./RedisConnection.vue";
 
@@ -44,10 +41,10 @@ var testLayout = [
     x: 0,
     y: 0,
     w: 12,
-    h: 1,
+    h: 2,
     i: "0",
     type: "RedisConnection",
-    params: { host: "localhost", port: 9000 },
+    params: { host: "limero.ddns.net", port: 9000, path: "/redis" },
   },
   { x: 2, y: 0, w: 2, h: 4, i: "1" },
   { x: 4, y: 0, w: 2, h: 5, i: "2" },
@@ -71,10 +68,11 @@ var testLayout = [
 ];
 
 export default {
-  name: "RedisWs",
+  name: "GridVue",
   data() {
     return {
       Redis,
+      Eventbus,
       Timer,
       colorPrimary: "success",
       timer: {},
@@ -86,13 +84,16 @@ export default {
   components: {
     GridLayout,
     GridItem,
-    RedisConnection
+    RedisConnection,
   },
   created() {
     this.timer = Timer.create(this.expired, 5000);
     Redis.subscribe(this.update, "src/hover/system/loopback");
     setInterval(this.update, 7000, "XXXX");
+    Eventbus.$on(["Grid", "save"], this.saveToRedis);
+    Eventbus.$on(["Grid", "load"], this.loadFromRedis);
   },
+  mounted() {},
   methods: {
     moveEvent: function (i, newX, newY) {
       console.log("MOVE i=" + i + ", X=" + newX + ", Y=" + newY);
@@ -106,17 +107,19 @@ export default {
     resizedEvent: function (i, newH, newW) {
       console.log("RESIZED i=" + i + ", H=" + newH + ", W=" + newW);
     },
-    update(v) {
-      console.log(v);
-      this.resumed();
+    update() {},
+    expired() {},
+    resumed() {},
+    saveToRedis() {
+      var serialized = JSON.stringify(this.layout);
+      console.log(serialized);
+      Redis.command(["set", "dashboard", serialized]);
     },
-    expired() {
-      console.log("expired");
-      this.colorPrimary = "danger";
-    },
-    resumed() {
-      this.colorPrimary = "success";
-      this.timer.reset();
+    loadFromRedis() {
+      Redis.command(["get", "dashboard"]).then((data) => {
+        console.log(data);
+        this.layout = JSON.parse(data);
+      });
     },
   },
 };

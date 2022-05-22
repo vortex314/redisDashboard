@@ -1,4 +1,5 @@
 import Vue from 'vue';
+/*jshint esversion: 6 */
 
 export const Redis = new Vue({
     name: 'redisService',
@@ -6,21 +7,31 @@ export const Redis = new Vue({
         return {
             subscriptions: [],
             connected: false,
-            host: "localhost",
+            host: "limero.ddns.net",
             port: 9000,
-            ws: {}
+            socketPath:"/redis",
+            ws: {},
         }
     },
     created: function () {
         this.subscriptions = [];
     },
     mounted() {
-
+    },
+    computed:{
+        webSocketUrl(){
+            return "ws://"+this.host+":"+this.port+this.socketPath;
+        }
     },
     methods: {
 
         onConnected() {
             console.log("Redis connected");
+            this.connected = true;
+            this.command(["hello","3"])
+            for( var subscription in this.subscriptions){
+                this.command(["PSUBSCRIBE", subscription.channel]);
+            }
         },
         onDisconnected() {
             console.log("Redis disconnected");
@@ -41,24 +52,41 @@ export const Redis = new Vue({
         subscribe(channel,action) {
             this.subscriptions.push({channel:channel,action:action});
         },
-        onerror(error) {
+        addHandler(strings,action){
+            if ( strings instanceof Array){
+                strings.forEach(s => {
+                    this.subscribe(s,action);
+                });
+            }
+        },
+        onError(error) {
             console.log(error);
         },
-        send(arr) {
+        command(arr) {
+            if ( !this.connected ) {
+                alert("Redis not connected");
+                return
+            }
+            console.log("Redis command: " + arr);
             this.ws.send(JSON.stringify(arr));
         },
+
         connect() {
-            this.ws = new WebSocket("ws://" + this.host + ":" + this.port + "/redis", [
+            console.log("Redis connecting to "+this.webSocketUrl);    
+            this.ws = new WebSocket(this.webSocketUrl, [
                 "string",
                 "foo",
             ]);
             this.ws.onopen = this.onConnected;
             this.ws.onclose = this.onDisconnected;
             this.ws.onmessage = this.onMessage;
-            this.ws.onerror = this.onerror;
+            this.ws.onerror = this.onError;
         },
         disconnect() {
             this.ws.close();
+            this.connected = false;
         },
     }
 });
+
+export const Eventbus = new Vue()

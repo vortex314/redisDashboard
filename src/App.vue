@@ -1,15 +1,16 @@
 <template>
   <div id="app" class="ml-0">
-    <RedisWs />
+    <GridVue />
   </div>
 </template>
 
 <script>
 
-import RedisWs from "./components/Grid.vue";
+import GridVue from "./components/Grid.vue";
+
 export default {
   name: "App",
-  components: { RedisWs },
+  components: { GridVue },
   methods: {
 
   },

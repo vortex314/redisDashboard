@@ -22,6 +22,7 @@
         @move="moveEvent"
         @resized="resizedEvent"
         @moved="movedEvent"
+        @contextmenu="handler($event)"
       >
         <component :is="item.type" v-bind="item.params"></component> </grid-item
     ></grid-layout>
@@ -29,10 +30,10 @@
 </template>
 
 <script>
-import { Redis, Eventbus } from "../Redis.js";
-import { Timer } from "../Timer.js";
+import { Redis, Eventbus , Timer } from "../Redis.js";
 import VueGridLayout from "vue-grid-layout";
 import RedisConnection from "./RedisConnection.vue";
+import SubLabel from "./SubLabel.vue";
 
 var GridLayout = VueGridLayout.GridLayout;
 var GridItem = VueGridLayout.GridItem;
@@ -40,31 +41,26 @@ var testLayout = [
   {
     x: 0,
     y: 0,
-    w: 12,
+    w: 6,
     h: 2,
     i: "0",
     type: "RedisConnection",
     params: { host: "limero.ddns.net", port: 9000, path: "/redis" },
   },
-  { x: 2, y: 0, w: 2, h: 4, i: "1" },
+  {
+    x: 2,
+    y: 0,
+    w: 2,
+    h: 4,
+    i: "1",
+    type: "SubLabel",
+    params: { label: "Voltage", topic: "src/hover/motor/voltage" },
+  },
   { x: 4, y: 0, w: 2, h: 5, i: "2" },
   { x: 6, y: 0, w: 2, h: 3, i: "3" },
   { x: 8, y: 0, w: 2, h: 3, i: "4" },
   { x: 10, y: 0, w: 2, h: 3, i: "5" },
   { x: 0, y: 5, w: 2, h: 5, i: "6" },
-  { x: 2, y: 5, w: 2, h: 5, i: "7" },
-  { x: 4, y: 5, w: 2, h: 5, i: "8" },
-  { x: 6, y: 4, w: 2, h: 4, i: "9" },
-  { x: 8, y: 4, w: 2, h: 4, i: "10" },
-  { x: 10, y: 4, w: 2, h: 4, i: "11" },
-  { x: 0, y: 10, w: 2, h: 5, i: "12" },
-  { x: 2, y: 10, w: 2, h: 5, i: "13" },
-  { x: 4, y: 8, w: 2, h: 4, i: "14" },
-  { x: 6, y: 8, w: 2, h: 4, i: "15" },
-  { x: 8, y: 10, w: 2, h: 5, i: "16" },
-  { x: 10, y: 4, w: 2, h: 2, i: "17" },
-  { x: 0, y: 9, w: 2, h: 3, i: "18" },
-  { x: 2, y: 6, w: 2, h: 2, i: "19" },
 ];
 
 export default {
@@ -73,7 +69,6 @@ export default {
     return {
       Redis,
       Eventbus,
-      Timer,
       colorPrimary: "success",
       timer: {},
       count: 0,
@@ -85,15 +80,18 @@ export default {
     GridLayout,
     GridItem,
     RedisConnection,
+    SubLabel,
   },
   created() {
     this.timer = Timer.create(this.expired, 5000);
-    Redis.subscribe(this.update, "src/hover/system/loopback");
-    setInterval(this.update, 7000, "XXXX");
-    Eventbus.$on(["Grid", "save"], this.saveToRedis);
-    Eventbus.$on(["Grid", "load"], this.loadFromRedis);
+    Redis.subscribe("src/hover/motor/voltage", this.update);
+    setInterval(this.expired, 7000, "XXXX");
+    Eventbus.$on("Grid.save", this.saveToRedis);
+    Eventbus.$on("Grid.load", this.loadFromRedis);
   },
-  mounted() {},
+  mounted() {
+    Redis.connect();
+  },
   methods: {
     moveEvent: function (i, newX, newY) {
       console.log("MOVE i=" + i + ", X=" + newX + ", Y=" + newY);
@@ -107,18 +105,25 @@ export default {
     resizedEvent: function (i, newH, newW) {
       console.log("RESIZED i=" + i + ", H=" + newH + ", W=" + newW);
     },
-    update() {},
+    update(topic, value) {
+      console.log("update", topic, value);
+    },
+    handler(event) {
+      console.log("handler", event);
+    },
     expired() {},
     resumed() {},
     saveToRedis() {
       var serialized = JSON.stringify(this.layout);
       console.log(serialized);
-      Redis.command(["set", "dashboard", serialized]);
+      Redis.request(["set", "dashboard", serialized]).then((x)=>{
+        alert("saveToRedis", x);
+      });
     },
     loadFromRedis() {
-      Redis.command(["get", "dashboard"]).then((data) => {
-        console.log(data);
-        this.layout = JSON.parse(data);
+      Redis.request(["get", "dashboard"]).then((data) => {
+        this.layout = JSON.parse(data[1]);
+        alert("loadFromRedis", data);
       });
     },
   },
@@ -142,7 +147,7 @@ export default {
 }
 
 .vue-grid-item:not(.vue-grid-placeholder) {
-  background: #ccc;
+  background: #fff;
   border: 1px solid black;
 }
 

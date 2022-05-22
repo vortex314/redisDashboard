@@ -19,8 +19,7 @@
 </template>
 
 <script>
-import { Redis, Eventbus } from "../Redis.js";
-import { Timer } from "../Timer.js";
+import { Redis, Eventbus,Timer  } from "../Redis.js";
 export default {
   name: "RedisConnection",
   props: {
@@ -57,10 +56,10 @@ export default {
     resumed() {},
     saveGrid() {
       console.log("emitting ");
-      Eventbus.$emit("Grid", "save");
+      Eventbus.$emit("Grid.save");
     },
     loadGrid() {
-      Eventbus.$emit("Grid", "load");
+      Eventbus.$emit("Grid.load");
     },
   },
 };

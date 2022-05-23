@@ -1,5 +1,5 @@
 <template>
-  <div>{{ label }} : {{ value }}</div>
+  <div :class="classState">{{ label }} : {{ value }} {{ unit }}</div>
 </template>
 
 <script>
@@ -9,20 +9,24 @@ export default {
   props: {
     label: {
       type: String,
-      default: "",
+      default: "LABEL",
     },
     topic: {
       type: String,
-      default: "",
+      default: "VALUE",
+    },
+    unit: {
+      type: String,
+      default: "UNIT",
     },
   },
   data() {
     return {
       count: 0,
       value: 0,
-      Redis,
-      Eventbus,
-      Timer,
+      classState:'alive',
+      timer:Timer.create(() => { this.classState="dead" } , 2000),
+      Redis,Eventbus,Timer
     };
   },
   mounted() {
@@ -31,13 +35,26 @@ export default {
   },
   methods: {
     update(topic, message) {
-        console.log("SubLabel.update topic:" + topic + " message:" + message);
+  //    console.log("SubLabel.update topic:" + topic + " message:" + message);
       this.count++;
       this.value = message;
+      this.timer.reset()
+      this.classState = 'alive';
     },
+  },
+  computed : {
+    
   },
 };
 </script>
 
 <style>
+.alive {
+  background-color: #fff;
+  color: #084480;
+}
+.dead {
+  background-color: #888;
+  color: #fff;
+}
 </style>

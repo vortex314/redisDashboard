@@ -2,8 +2,8 @@
   <div class="ml-0">
     <grid-layout
       :layout="layout"
-      :col-num="12"
-      :row-height="20"
+      :col-num="24"
+      :row-height="15"
       :is-draggable="true"
       :is-resizable="true"
       :vertical-compact="true"
@@ -22,7 +22,7 @@
         @move="moveEvent"
         @resized="resizedEvent"
         @moved="movedEvent"
-        @contextmenu="handler($event)"
+        @contextmenu.native="handler"
       >
         <component :is="item.type" v-bind="item.params"></component> </grid-item
     ></grid-layout>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { Redis, Eventbus , Timer } from "../Redis.js";
+import { Redis, Eventbus, Timer } from "../Redis.js";
 import VueGridLayout from "vue-grid-layout";
 import RedisConnection from "./RedisConnection.vue";
 import SubLabel from "./SubLabel.vue";
@@ -54,9 +54,17 @@ var testLayout = [
     h: 4,
     i: "1",
     type: "SubLabel",
-    params: { label: "Voltage", topic: "src/hover/motor/voltage" },
+    params: { label: "Voltage", topic: "src/hover/motor/voltage", unit: "V" },
   },
-  { x: 4, y: 0, w: 2, h: 5, i: "2" },
+  {
+    x: 4,
+    y: 0,
+    w: 2,
+    h: 5,
+    i: "2",
+    type: "SubLabel",
+    params: { label: "Angle", topic: "src/hover/motor/angle", unit: "°" },
+  },
   { x: 6, y: 0, w: 2, h: 3, i: "3" },
   { x: 8, y: 0, w: 2, h: 3, i: "4" },
   { x: 10, y: 0, w: 2, h: 3, i: "5" },
@@ -84,7 +92,6 @@ export default {
   },
   created() {
     this.timer = Timer.create(this.expired, 5000);
-    Redis.subscribe("src/hover/motor/voltage", this.update);
     setInterval(this.expired, 7000, "XXXX");
     Eventbus.$on("Grid.save", this.saveToRedis);
     Eventbus.$on("Grid.load", this.loadFromRedis);
@@ -109,14 +116,15 @@ export default {
       console.log("update", topic, value);
     },
     handler(event) {
-      console.log("handler", event);
+      console.log("rightClickHandler", event.srcElement.__vue__, event);
+      event.preventDefault();
     },
     expired() {},
     resumed() {},
     saveToRedis() {
       var serialized = JSON.stringify(this.layout);
       console.log(serialized);
-      Redis.request(["set", "dashboard", serialized]).then((x)=>{
+      Redis.request(["set", "dashboard", serialized]).then((x) => {
         alert("saveToRedis", x);
       });
     },
@@ -134,7 +142,7 @@ export default {
   z-index: 5000;
   position: absolute;
   width: 20px;
-  height: 20px;
+  height: 24px;
   bottom: 0;
   right: 0;
   background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pg08IS0tIEdlbmVyYXRvcjogQWRvYmUgRmlyZXdvcmtzIENTNiwgRXhwb3J0IFNWRyBFeHRlbnNpb24gYnkgQWFyb24gQmVhbGwgKGh0dHA6Ly9maXJld29ya3MuYWJlYWxsLmNvbSkgLiBWZXJzaW9uOiAwLjYuMSAgLS0+DTwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DTxzdmcgaWQ9IlVudGl0bGVkLVBhZ2UlMjAxIiB2aWV3Qm94PSIwIDAgNiA2IiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjojZmZmZmZmMDAiIHZlcnNpb249IjEuMSINCXhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbDpzcGFjZT0icHJlc2VydmUiDQl4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjZweCIgaGVpZ2h0PSI2cHgiDT4NCTxnIG9wYWNpdHk9IjAuMzAyIj4NCQk8cGF0aCBkPSJNIDYgNiBMIDAgNiBMIDAgNC4yIEwgNCA0LjIgTCA0LjIgNC4yIEwgNC4yIDAgTCA2IDAgTCA2IDYgTCA2IDYgWiIgZmlsbD0iIzAwMDAwMCIvPg0JPC9nPg08L3N2Zz4=");

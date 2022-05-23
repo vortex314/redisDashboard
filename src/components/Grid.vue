@@ -24,7 +24,7 @@
         @moved="movedEvent"
         @contextmenu.native="handler"
       >
-        <component :is="item.type" v-bind="item.params"></component> </grid-item
+        <component style="{'backgroundColor':'#FC0'}" :is="item.type" v-bind="item.params"></component> </grid-item
     ></grid-layout>
   </div>
 </template>

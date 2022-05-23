@@ -23,3 +23,6 @@ npm run lint
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 # redisDashboard
+
+https://dev.to/ecordani/dynamic-styling-in-vue-js-46l
+

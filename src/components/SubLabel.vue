@@ -4,6 +4,7 @@
 
 <script>
 import { Redis, Eventbus, Timer } from "../Redis.js";
+import { Sub } from "../Sub.js";
 export default {
   name: "SubLabel",
   props: {
@@ -25,21 +26,23 @@ export default {
       count: 0,
       value: 0,
       classState:'alive',
-      timer:Timer.create(() => { this.classState="dead" } , 2000),
       Redis,Eventbus,Timer
     };
   },
   mounted() {
+    this.sub =  new Sub(this.topic, 1000, this.onMessage,this.onTimeout );
     console.log("SubLabel label:" + this.label + " topic " + this.topic);
-    Redis.subscribe(this.topic, this.update);
   },
   methods: {
-    update(topic, message) {
+    onMessage(topic, message) {
   //    console.log("SubLabel.update topic:" + topic + " message:" + message);
       this.count++;
       this.value = message;
       this.timer.reset()
       this.classState = 'alive';
+    },
+    onTimeout() {
+      this.classState = 'dead';
     },
   },
   computed : {

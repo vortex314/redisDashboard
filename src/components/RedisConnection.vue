@@ -1,25 +1,30 @@
 <template>
   <div>
-    <b-btn class="w-25" v-if="Redis.connected" variant="success"
-      >CONNECTED</b-btn
+    <b-btn class="button"
+      v-if="!Redis.connected"
+      variant="success"
+      v-on:click="connect"
+      >Connect</b-btn
     >
-    <b-btn class="w-25" v-if="!Redis.connected" variant="danger"
-      >DISCONNECTED</b-btn
+    <b-btn class="button"
+      v-if="Redis.connected"
+      variant="danger"
+      v-on:click="disconnect"
+      >Disconnect</b-btn
     >
-
-    <b-btn variant="primary" v-on:click="Redis.connect()">Connect</b-btn>
-    <b-btn variant="primary" v-on:click="Redis.disconnect()">Disconnect</b-btn>
-    <b-btn variant="success" v-on:click="saveGrid">
+    <b-btn class="button" variant="primary" v-on:click="saveGrid">
       <b-icon icon="cloud-upload" aria-hidden="true"></b-icon>
     </b-btn>
-    <b-btn variant="success" v-on:click="loadGrid"
-      ><b-icon icon="folder" aria-hidden="true"
+    <b-btn class="button" variant="primary" v-on:click="loadGrid"
+      ><b-icon icon="folder" aria-hidden="true"/></b-btn>
+    <b-btn class="button" variant="primary" v-on:click="addGridItem">
+      ><b-icon icon="plus" aria-hidden="true"
     /></b-btn>
   </div>
 </template>
 
 <script>
-import { Redis, Eventbus,Timer  } from "../Redis.js";
+import { Redis, Eventbus } from "../Redis.js";
 export default {
   name: "RedisConnection",
   props: {
@@ -46,14 +51,6 @@ export default {
     console.log("RedisConnection host:" + this.host + " port " + this.port);
   },
   methods: {
-    update() {
-      Redis.connect();
-      Redis.disconnect();
-      this.timer = Timer.create(this.expired, 5000);
-      Redis.subscribe(this.update, "src/hover/system/loopback");
-      setInterval(this.update, 7000, "XXXX");
-    },
-    resumed() {},
     saveGrid() {
       console.log("emitting ");
       Eventbus.$emit("Grid.save");
@@ -61,9 +58,26 @@ export default {
     loadGrid() {
       Eventbus.$emit("Grid.load");
     },
+    addGridItem() {
+      Eventbus.$emit("Grid.add");
+    },
+    connect() {
+      Redis.connect();
+    },
+    disconnect(){
+      Redis.disconnect();
+    },
   },
 };
 </script>
-
+.button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
 <style>
 </style>

@@ -83,7 +83,7 @@ export const Redis = new Vue({
 
                 default: {
                     let rp = this.promises.dequeue()
-                    if (rp.cmd != cmd) console.log("ERROR: ", rp.cmd, cmd)
+                    if (rp.cmd.toLowerCase() != cmd.toLowerCase()) console.log("ERROR: ", rp.cmd, cmd)
                     rp.resolve(arr);
                     break;
                 }

@@ -11,6 +11,7 @@
       :use-css-transforms="true"
     >
       <grid-item
+        class="m-0 p-0"
         v-for="item in layout"
         :key="item.i"
         :x="item.x"
@@ -23,14 +24,18 @@
         @resized="resizedEvent"
         @moved="movedEvent"
         @contextmenu.native="handler"
-      >
-        <component style="{'backgroundColor':'#FC0'}" :is="item.type" v-bind="item.params"></component> </grid-item
+        ><span class="remove" @click="removeItem(item.i)">x</span>
+        <component
+          style="{'backgroundColor':'#FC0'}"
+          :is="item.type"
+          v-bind="item.params"
+        ></component> </grid-item
     ></grid-layout>
   </div>
 </template>
 
 <script>
-import { Redis, Eventbus, Timer } from "../Redis.js";
+import { Redis, Eventbus } from "../Redis.js";
 import VueGridLayout from "vue-grid-layout";
 import RedisConnection from "./RedisConnection.vue";
 import SubLabel from "./SubLabel.vue";
@@ -81,6 +86,7 @@ export default {
       timer: {},
       count: 0,
       layout: testLayout,
+      index:"7"
     };
   },
   props: {},
@@ -91,10 +97,9 @@ export default {
     SubLabel,
   },
   created() {
-    this.timer = Timer.create(this.expired, 5000);
-    setInterval(this.expired, 7000, "XXXX");
     Eventbus.$on("Grid.save", this.saveToRedis);
     Eventbus.$on("Grid.load", this.loadFromRedis);
+    Eventbus.$on("Grid.add", this.addGridItem);
   },
   mounted() {
     Redis.connect();
@@ -112,15 +117,26 @@ export default {
     resizedEvent: function (i, newH, newW) {
       console.log("RESIZED i=" + i + ", H=" + newH + ", W=" + newW);
     },
-    update(topic, value) {
-      console.log("update", topic, value);
+    addGridItem: function () {
+      // Add a new item. It must have a unique key!
+      this.layout.push({
+        x: (this.layout.length * 2) % (this.colNum || 12),
+        y: this.layout.length + (this.colNum || 12), // puts it at the bottom
+        w: 2,
+        h: 2,
+        i: this.index,
+      });
+      // Increment the counter to ensure key is always unique.
+      this.index++;
+    },
+    removeItem: function (val) {
+      const index = this.layout.map((item) => item.i).indexOf(val);
+      this.layout.splice(index, 1);
     },
     handler(event) {
       console.log("rightClickHandler", event.srcElement.__vue__, event);
       event.preventDefault();
     },
-    expired() {},
-    resumed() {},
     saveToRedis() {
       var serialized = JSON.stringify(this.layout);
       console.log(serialized);
@@ -184,6 +200,13 @@ export default {
 }
 
 .vue-grid-item .add {
+  cursor: pointer;
+}
+
+.remove {
+  position: absolute;
+  right: 2px;
+  top: 0;
   cursor: pointer;
 }
 </style>

@@ -39,10 +39,10 @@ export default {
       this.count++;
       this.value = message;
       this.timer.reset()
-      this.classState = 'alive';
+      this.classState = 'm-0 p-0 alive';
     },
     onTimeout() {
-      this.classState = 'dead';
+      this.classState = 'm-0 p-0 dead';
     },
   },
   computed : {

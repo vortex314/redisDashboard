@@ -1,24 +1,22 @@
 <template>
-  <div>
+  <div class="mx-1">
     <b-btn class="button"
-      v-if="!Redis.connected"
-      variant="success"
+      :disabled="Redis.connected"
       v-on:click="connect"
       >Connect</b-btn
     >
     <b-btn class="button"
-      v-if="Redis.connected"
-      variant="danger"
+      :disabled="!Redis.connected"
       v-on:click="disconnect"
       >Disconnect</b-btn
     >
-    <b-btn class="button" variant="primary" v-on:click="saveGrid">
+    <b-btn class="button"  v-on:click="saveGrid" :disabled="!Redis.connected">
       <b-icon icon="cloud-upload" aria-hidden="true"></b-icon>
     </b-btn>
-    <b-btn class="button" variant="primary" v-on:click="loadGrid"
+    <b-btn class="button"  v-on:click="loadGrid" :disabled="!Redis.connected"
       ><b-icon icon="folder" aria-hidden="true"/></b-btn>
-    <b-btn class="button" variant="primary" v-on:click="addGridItem">
-      ><b-icon icon="plus" aria-hidden="true"
+    <b-btn class="button"  v-on:click="addGridItem">
+      <b-icon icon="plus" aria-hidden="true"
     /></b-btn>
   </div>
 </template>

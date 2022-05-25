@@ -141,14 +141,14 @@ export default {
       var serialized = JSON.stringify(this.layout);
       console.log(serialized);
       Redis.request(["set", "dashboard", serialized]).then((x) => {
-        alert("saveToRedis", x);
+        console.log("Saved to Redis", x);
       });
     },
     loadFromRedis() {
       Redis.request(["get", "dashboard"]).then((data) => {
         this.layout = JSON.parse(data[1]);
-        alert("loadFromRedis", data);
-      });
+        console.log("Loaded from Redis", data);
+        });
     },
   },
 };

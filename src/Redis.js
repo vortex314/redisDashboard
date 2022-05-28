@@ -88,7 +88,7 @@ export const Redis = new Vue({
                     break;
                 }
             }
-            console.log(message);
+//            console.log(message);
         },
         subscribe(pattern, action) {
             this.subscriptions.push({ pattern: pattern, callback: action });

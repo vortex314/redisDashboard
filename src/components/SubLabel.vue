@@ -38,7 +38,7 @@ export default {
   //    console.log("SubLabel.update topic:" + topic + " message:" + message);
       this.count++;
       this.value = message;
-      this.timer.reset()
+      this.sub.reset()
       this.classState = 'm-0 p-0 alive';
     },
     onTimeout() {

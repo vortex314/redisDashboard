@@ -39,42 +39,51 @@ import { Redis, Eventbus } from "../Redis.js";
 import VueGridLayout from "vue-grid-layout";
 import RedisConnection from "./RedisConnection.vue";
 import SubLabel from "./SubLabel.vue";
+import SubAngle from "./SubAngle.vue";
 
 var GridLayout = VueGridLayout.GridLayout;
 var GridItem = VueGridLayout.GridItem;
-var testLayout = [
-  {
-    x: 0,
-    y: 0,
-    w: 6,
-    h: 2,
-    i: "0",
-    type: "RedisConnection",
-    params: { host: "limero.ddns.net", port: 9000, path: "/redis" },
-  },
-  {
-    x: 2,
-    y: 0,
-    w: 2,
-    h: 4,
-    i: "1",
-    type: "SubLabel",
-    params: { label: "Voltage", topic: "src/hover/motor/voltage", unit: "V" },
-  },
-  {
-    x: 4,
-    y: 0,
-    w: 2,
-    h: 5,
-    i: "2",
-    type: "SubLabel",
-    params: { label: "Angle", topic: "src/hover/motor/angle", unit: "°" },
-  },
-  { x: 6, y: 0, w: 2, h: 3, i: "3" },
-  { x: 8, y: 0, w: 2, h: 3, i: "4" },
-  { x: 10, y: 0, w: 2, h: 3, i: "5" },
-  { x: 0, y: 5, w: 2, h: 5, i: "6" },
-];
+var testLayout  = [
+    {
+      x: 0,
+      y: 0,
+      w: 11,
+      h: 3,
+      i: "0",
+      type: "RedisConnection",
+      params: { host: "limero.ddns.net", port: 9000, path: "/redis" },
+      moved: false,
+    },
+    {
+      x: 0,
+      y: 3,
+      w: 6,
+      h: 2,
+      i: "1",
+      type: "SubLabel",
+      params: { label: "Voltage", topic: "src/hover/motor/voltage", unit: "V" },
+      moved: false,
+    },
+    {
+      x: 6,
+      y: 3,
+      w: 5,
+      h: 2,
+      i: "2",
+      type: "SubLabel",
+      params: { label: "Angle", topic: "src/hover/motor/angle", unit: "°" },
+      moved: false,
+    },
+    {
+      x: 0,
+      y: 5,
+      w: 6,
+      h: 9,
+      i: "7",
+      type: "SubAngle",
+      params: { label: "Angle", topic: "src/hover/motor/angle", unit: "°" },
+    },
+  ];
 
 export default {
   name: "GridVue",
@@ -86,7 +95,7 @@ export default {
       timer: {},
       count: 0,
       layout: testLayout,
-      index:"7"
+      index: "7",
     };
   },
   props: {},
@@ -94,7 +103,7 @@ export default {
     GridLayout,
     GridItem,
     RedisConnection,
-    SubLabel,
+    SubLabel,SubAngle
   },
   created() {
     Eventbus.$on("Grid.save", this.saveToRedis);
@@ -148,7 +157,7 @@ export default {
       Redis.request(["get", "dashboard"]).then((data) => {
         this.layout = JSON.parse(data[1]);
         console.log("Loaded from Redis", data);
-        });
+      });
     },
   },
 };

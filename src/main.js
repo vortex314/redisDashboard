@@ -6,7 +6,7 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-import {BIcon, BIconArrowUp, BIconArrowDown } from 'bootstrap-vue'
+import { BIcon, BIconArrowUp, BIconArrowDown } from 'bootstrap-vue'
 
 Vue.use(BootstrapVue)
 Vue.component('BIcon', BIcon)
@@ -17,6 +17,29 @@ Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
 Vue.config.productionTip = false
+
+import ECharts from 'vue-echarts'
+import { use } from 'echarts/core'
+
+// import ECharts modules manually to reduce bundle size
+import {
+  CanvasRenderer
+} from 'echarts/renderers'
+import {
+  BarChart
+} from 'echarts/charts'
+import {
+  GridComponent,
+  TooltipComponent
+} from 'echarts/components'
+
+use([
+  CanvasRenderer,
+  BarChart,
+  GridComponent,
+  TooltipComponent
+]);
+Vue.component('v-chart', ECharts)
 
 new Vue({
   render: h => h(App),

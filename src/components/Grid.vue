@@ -13,6 +13,7 @@
       <grid-item
         class="m-0 p-0"
         v-for="item in layout"
+        ref="items"
         :key="item.i"
         :x="item.x"
         :y="item.y"
@@ -25,10 +26,30 @@
         @moved="movedEvent"
         @contextmenu.native="handler"
         ><span class="remove" @click="removeItem(item.i)">x</span>
+        <b-modal ref="modal+'item.i'" hide-footer title="Using Component Methods">
+          <div class="d-block text-center">
+            <h3>Hello From My Modal!</h3>
+          </div>
+          <b-button
+            class="mt-3"
+            variant="outline-danger"
+            block
+            @click="hideModal"
+            >Close Me</b-button
+          >
+          <b-button
+            class="mt-2"
+            variant="outline-warning"
+            block
+            @click="toggleModal"
+            >Toggle Me</b-button
+          >
+        </b-modal>
         <component
           style="{'backgroundColor':'#FC0'}"
           :is="item.type"
           v-bind="item.params"
+          :ref="item.i"
         ></component> </grid-item
     ></grid-layout>
   </div>
@@ -40,50 +61,65 @@ import VueGridLayout from "vue-grid-layout";
 import RedisConnection from "./RedisConnection.vue";
 import SubLabel from "./SubLabel.vue";
 import SubAngle from "./SubAngle.vue";
+import SubGraph from "./SubGraph.vue";
+import SubGraph2 from "./SubGraph2.vue";
 
 var GridLayout = VueGridLayout.GridLayout;
 var GridItem = VueGridLayout.GridItem;
-var testLayout  = [
-    {
-      x: 0,
-      y: 0,
-      w: 11,
-      h: 3,
-      i: "0",
-      type: "RedisConnection",
-      params: { host: "limero.ddns.net", port: 9000, path: "/redis" },
-      moved: false,
+var testLayout = [
+  {
+    x: 0,
+    y: 0,
+    w: 11,
+    h: 3,
+    i: "0",
+    type: "RedisConnection",
+    params: { host: "limero.ddns.net", port: 9000, path: "/redis" },
+    moved: false,
+  },
+  {
+    x: 0,
+    y: 3,
+    w: 6,
+    h: 2,
+    i: "1",
+    type: "SubLabel",
+    params: { label: "Voltage", topic: "src/hover/motor/voltage", unit: "V" },
+    moved: false,
+  },
+  {
+    x: 6,
+    y: 3,
+    w: 5,
+    h: 2,
+    i: "2",
+    type: "SubLabel",
+    params: { label: "Angle", topic: "src/hover/motor/angle", unit: "°" },
+    moved: false,
+  },
+  {
+    x: 0,
+    y: 5,
+    w: 6,
+    h: 9,
+    i: "3",
+    type: "SubAngle",
+    params: { label: "Angle", topic: "src/hover/motor/angle", unit: "°" },
+  },
+  {
+    x: 0,
+    y: 5,
+    w: 6,
+    h: 9,
+    i: "4",
+    type: "SubGraph",
+    params: {
+      label: "Latency",
+      topic: "src/hover/system/latency",
+      unit: "msec",
     },
-    {
-      x: 0,
-      y: 3,
-      w: 6,
-      h: 2,
-      i: "1",
-      type: "SubLabel",
-      params: { label: "Voltage", topic: "src/hover/motor/voltage", unit: "V" },
-      moved: false,
-    },
-    {
-      x: 6,
-      y: 3,
-      w: 5,
-      h: 2,
-      i: "2",
-      type: "SubLabel",
-      params: { label: "Angle", topic: "src/hover/motor/angle", unit: "°" },
-      moved: false,
-    },
-    {
-      x: 0,
-      y: 5,
-      w: 6,
-      h: 9,
-      i: "7",
-      type: "SubAngle",
-      params: { label: "Angle", topic: "src/hover/motor/angle", unit: "°" },
-    },
-  ];
+  },
+];
 
 export default {
   name: "GridVue",
@@ -103,7 +139,10 @@ export default {
     GridLayout,
     GridItem,
     RedisConnection,
-    SubLabel,SubAngle
+    SubLabel,
+    SubAngle,
+    SubGraph,
+    SubGraph2,
   },
   created() {
     Eventbus.$on("Grid.save", this.saveToRedis);
@@ -145,6 +184,8 @@ export default {
     handler(event) {
       console.log("rightClickHandler", event.srcElement.__vue__, event);
       event.preventDefault();
+      console.log(this.$refs)
+      this.$refs['modal+' + event.srcElement.__vue__.item.i].show();
     },
     saveToRedis() {
       var serialized = JSON.stringify(this.layout);
@@ -158,6 +199,12 @@ export default {
         this.layout = JSON.parse(data[1]);
         console.log("Loaded from Redis", data);
       });
+    },
+    hideModal(){
+      this.$refs['modal+' + this.index].hide();
+    },
+    toggleModal(){
+      this.$refs['modal+' + this.index].toggle();
     },
   },
 };

@@ -12,7 +12,7 @@ export  class Sub {
         Redis.unsubscribe(this.pattern, this.callback);
         this.timer.stop();
     }
-    reset() {
+    resetTimer() {
         this.timer.reset();
     }
 }

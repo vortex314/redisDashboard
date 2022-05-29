@@ -1,5 +1,5 @@
 <template>
-  <div :class="classState">{{ label }} : {{ value }} {{ unit }}</div>
+  <div :class="classState" >{{ label }} : {{ value }} {{ unit }}</div>
 </template>
 
 <script>
@@ -25,7 +25,7 @@ export default {
     return {
       count: 0,
       value: 0,
-      classState:'alive',
+      classState:'m-0 p-0 text-center dead',
       Redis,Eventbus,Timer
     };
   },
@@ -37,12 +37,12 @@ export default {
     onMessage(topic, message) {
   //    console.log("SubLabel.update topic:" + topic + " message:" + message);
       this.count++;
-      this.value = message;
-      this.sub.reset()
-      this.classState = 'm-0 p-0 alive';
+      this.value = message.toFixed(2);
+      this.sub.resetTimer()
+      this.classState = 'm-0 p-0 text-center alive';
     },
     onTimeout() {
-      this.classState = 'm-0 p-0 dead';
+      this.classState = 'm-0 p-0 text-center dead';
     },
   },
   computed : {

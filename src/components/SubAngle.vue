@@ -1,13 +1,13 @@
 <template>
-  <v-chart class="chart" :option="chartOptions" autoresize/>
+  <v-chart :class="classState" :option="chartOptions" :update-options="{notMerge:false}"  autoresize :manual-update="manualUpdate" />
 </template>
 
 <script>
 import { Redis, Eventbus, Timer } from "../Redis.js";
 import { Sub } from "../Sub.js";
 import { use } from "echarts/core";
-import { CanvasRenderer } from "echarts/renderers";
-import { PieChart, GaugeChart } from "echarts/charts";
+import { CanvasRenderer,SVGRenderer } from "echarts/renderers";
+import { GaugeChart } from "echarts/charts";
 import {
   TitleComponent,
   TooltipComponent,
@@ -15,8 +15,7 @@ import {
 } from "echarts/components";
 import VChart, { THEME_KEY } from "vue-echarts";
 use([
-  CanvasRenderer,
-  PieChart,
+  CanvasRenderer,SVGRenderer,
   GaugeChart,
   TitleComponent,
   TooltipComponent,
@@ -28,7 +27,7 @@ export default {
     VChart,
   },
   provide: {
-    [THEME_KEY]: "dark",
+    [THEME_KEY]: "light",
   },
   props: {
     label: {
@@ -46,15 +45,15 @@ export default {
   },
   data() {
     return {
-      count: 0,
       value: 0,
       classState: "alive",
+      manualUpdate:true,
       Redis,
       Eventbus,
       Timer,
       chartOptions: {
-//        width: "100%",
-//        height: "100%",
+        manualUpdate:false,
+        zlevel: 0,
         title: {
           text: this.topic,
           left: "center",
@@ -76,7 +75,7 @@ export default {
             endAngle: -90,
             radius: "80%",
             progress: {
-              show: true,
+              show: false,
             },
             detail: {
               valueAnimation: true,
@@ -94,18 +93,16 @@ export default {
     };
   },
   mounted() {
-    this.sub = new Sub(this.topic, 1000, this.onMessage, this.onTimeout);
-    console.log("SubLabel label:" + this.label + " topic " + this.topic);
+    this.sub = new Sub(this.topic, 2000, this.onMessage, this.onTimeout);
+    console.log("SubAngle label:" + this.label + " topic " + this.topic);
     this.chart =  this.$children[0].chart;
   },
   methods: {
     onMessage(topic, message) {
-      //    console.log("SubLabel.update topic:" + topic + " message:" + message);
-      this.count++;
-      this.value = message;
-      this.sub.reset(); 
+      this.value = message.toFixed(2);
+      this.sub.resetTimer(); 
       this.classState = "m-0 p-0 alive";
-      this.chart.setOption({series:[{type:"gauge",data:[{value:message,name:this.label}]}]});
+      this.chart.setOption({series:[{data:[{value:message,name:this.label}]}]},false,true);
     },
     onTimeout() {
       this.classState = "m-0 p-0 dead";

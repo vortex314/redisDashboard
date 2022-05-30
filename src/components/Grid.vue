@@ -24,9 +24,14 @@
         @move="moveEvent"
         @resized="resizedEvent"
         @moved="movedEvent"
-        @contextmenu.native="handler"
-        ><span class="remove" @click="removeItem(item.i)">x</span>
-        <b-modal ref="modal+'item.i'" hide-footer title="Using Component Methods">
+        @contextmenu.native="rightClickHandler($event, item.i)"
+      >
+        <span class="remove" @click="removeItem(item.i)">x</span>
+        <b-modal
+          :ref="'modal' + item.i"
+          hide-footer
+          title="Using Component Methods"
+        >
           <div class="d-block text-center">
             <h3>Hello From My Modal!</h3>
           </div>
@@ -181,11 +186,13 @@ export default {
       const index = this.layout.map((item) => item.i).indexOf(val);
       this.layout.splice(index, 1);
     },
-    handler(event) {
-      console.log("rightClickHandler", event.srcElement.__vue__, event);
+    rightClickHandler(event, arg) {
+      console.log("rightClickHandler", arg, event);
       event.preventDefault();
-      console.log(this.$refs)
-      this.$refs['modal+' + event.srcElement.__vue__.item.i].show();
+      this.index = "modal" + arg;
+      var modalBox = this.$refs[this.index]
+      console.log(modalBox);
+      modalBox[0].show();
     },
     saveToRedis() {
       var serialized = JSON.stringify(this.layout);
@@ -200,11 +207,11 @@ export default {
         console.log("Loaded from Redis", data);
       });
     },
-    hideModal(){
-      this.$refs['modal+' + this.index].hide();
+    hideModal() {
+      this.$refs[this.index][0].hide();
     },
-    toggleModal(){
-      this.$refs['modal+' + this.index].toggle();
+    toggleModal() {
+      this.$refs[this.index][0].toggle();
     },
   },
 };

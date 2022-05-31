@@ -3,11 +3,12 @@ import App from './App.vue'
 
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
+import vuetify from './plugins/vuetify'
 
 Vue.use(Vuetify)
 
 Vue.config.productionTip = false
-
+/*
 import ECharts from 'vue-echarts'
 import { use } from 'echarts/core'
 
@@ -18,10 +19,12 @@ import {
 import {
   BarChart
 } from 'echarts/charts'
+
 import {
   GridComponent,
   TooltipComponent
 } from 'echarts/components'
+
 
 use([
   CanvasRenderer,
@@ -29,11 +32,10 @@ use([
   GridComponent,
   TooltipComponent
 ]);
-Vue.component('v-chart', ECharts)
-const vuetifyOptions = { }
+Vue.component('v-chart', ECharts)*/
 
 new Vue({
   render: h => h(App),
-  vuetify: new Vuetify(vuetifyOptions)
+  vuetify:vuetify,
 }).$mount('#app')
 

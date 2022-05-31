@@ -1,33 +1,33 @@
 <template>
-  <v-app-bar class="ma-0 pa-0">
-    <v-row class="ma-0 pa-0">
-      <v-btn class="pink" :disabled="Redis.connected" @click="Redis.connect()">
-        <v-icon >mdi-lan-connect</v-icon>
-      </v-btn>
-      <v-btn class="pink" :disabled="!Redis.connected" @click="Redis.disconnect()">
-        <v-icon>mdi-lan-disconnect</v-icon>
-      </v-btn>
-      <v-btn @click="Eventbus.$emit('Grid.save')" :disabled="!Redis.connected">
-        <v-icon>mdi-content-save</v-icon>
-      </v-btn>
-      <v-btn @click="Eventbus.$emit('Grid.load')" :disabled="!Redis.connected">
-        <v-icon>mdi-folder-arrow-down-outline</v-icon>
-      </v-btn>
-      <v-btn @click="Eventbus.$emit('Grid.add')" :disabled="!Redis.connected">
-        <v-icon>mdi-shape-rectangle-plus</v-icon>
-      </v-btn>
-      <v-btn @click="Eventbus.$emit('Grid.unfreeze')">
-        <v-icon >
-          mdi-lock-open-variant-outline
-        </v-icon>
-      </v-btn>
-      <v-btn @click="Eventbus.$emit('Grid.freeze')">
-        <v-icon>
-          mdi-lock
-        </v-icon>
-      </v-btn>
-    </v-row>
-  </v-app-bar>
+<v-container>
+  <v-row align="center" justify="space-around">
+    <v-btn color="primary" :disabled="Redis.connected" @click="Redis.connect()">
+      <v-icon>mdi-lan-connect</v-icon>
+    </v-btn>
+    <v-btn color="primary" :disabled="!Redis.connected" @click="Redis.disconnect()">
+      <v-icon>mdi-lan-disconnect</v-icon>
+    </v-btn>
+    <v-btn @click="Eventbus.$emit('Grid.save')" :disabled="!Redis.connected" color="primary">
+      <v-icon>mdi-content-save</v-icon>
+    </v-btn>
+    <v-btn @click="Eventbus.$emit('Grid.load')" :disabled="!Redis.connected" color="primary">
+      <v-icon>mdi-folder-arrow-down-outline</v-icon>
+    </v-btn>
+    <v-btn @click="Eventbus.$emit('Grid.add')" :disabled="!Redis.connected" color="primary">
+      <v-icon>mdi-shape-rectangle-plus</v-icon>
+    </v-btn>
+    <v-btn @click="Eventbus.$emit('Grid.unfreeze')" color="primary">
+      <v-icon>
+        mdi-lock-open-variant-outline
+      </v-icon>
+    </v-btn>
+    <v-btn @click="Eventbus.$emit('Grid.freeze')" color="primary">
+      <v-icon>
+        mdi-lock
+      </v-icon>
+    </v-btn>
+  </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       count: 0,
-      Redis,Eventbus
+      Redis, Eventbus
     };
   },
   mounted() {

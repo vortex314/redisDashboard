@@ -46,13 +46,46 @@ export default {
   },
   data() {
     return {
-      value: 0,
       classState: "alive",
       manualUpdate: true,
       Redis,
       Eventbus,
       Timer,
-      chartOptions: {
+      alive:false,
+
+    };
+  },
+  mounted() {
+    this.sub = new Sub(this.topic, 2000, this.onMessage, this.onTimeout);
+    console.log("SubAngle label:" + this.label + " topic " + this.topic);
+    this.chart = this.$children[0].chart;
+    this.value = 0;
+  },
+  unmounted() {
+    this.sub.stop();
+    this.chart.dispose();
+  },
+  methods: {
+    onMessage(topic, message) {
+      this.value = message.toFixed(2);
+      this.sub.resetTimer();
+      if ( !this.alive ) {
+        this.alive = true;
+        this.classState = "alive";
+      } 
+      this.chart.setOption({ series: [{ data: [{ value: this.value, name: this.label }] }] }, false, true);
+    },
+    onTimeout() {
+      if ( this.alive ) {
+        this.alive = false;
+        this.classState = "m-0 p-0 dead";
+      }
+    },
+  },
+  computed: {
+    chartOptions() {
+      console.log("SubAngle.chartOptions");
+      return {
         manualUpdate: false,
         zlevel: 0,
         title: {
@@ -90,30 +123,9 @@ export default {
             ],
           },
         ],
-      },
-    };
+      }
+    }
   },
-  mounted() {
-    this.sub = new Sub(this.topic, 2000, this.onMessage, this.onTimeout);
-    console.log("SubAngle label:" + this.label + " topic " + this.topic);
-    this.chart = this.$children[0].chart;
-  },
-  unmounted() {
-    this.sub.stop();
-    this.chart.dispose();
-  },
-  methods: {
-    onMessage(topic, message) {
-      this.value = message.toFixed(2);
-      this.sub.resetTimer();
-      this.classState = "m-0 p-0 alive";
-      this.chart.setOption({ series: [{ data: [{ value: message, name: this.label }] }] }, false, true);
-    },
-    onTimeout() {
-      this.classState = "m-0 p-0 dead";
-    },
-  },
-  computed: {},
 };
 </script>
 

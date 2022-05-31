@@ -1,18 +1,17 @@
 <template>
-  <div id="app" class="ml-0">
-    <GridVue />
-  </div>
+  <v-app>
+    <v-main>
+      <grid-vue/>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-
 import GridVue from "./components/Grid.vue";
-
 export default {
   name: "App",
   components: { GridVue },
   methods: {
-
   },
 };
 </script>

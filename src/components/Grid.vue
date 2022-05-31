@@ -4,9 +4,9 @@
       :vertical-compact="true" :margin="[1, 1]" :use-css-transforms="true">
       <grid-item class="m-0 p-0" v-for="item in layout" ref="items" :key="item.i" :x="item.x" :y="item.y" :w="item.w"
         :h="item.h" :i="item.i" @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent"
-        @contextmenu.native="rightClickHandler($event, item.i)">
-        <span class="remove" @click="removeItem(item.i)">x</span>
+        @contextmenu.native="rightClickHandler($event, item.i)">       
         <component style="{'backgroundColor':'#FC0'}" :is="item.type" v-bind="item.params" :ref="item.i"></component>
+        <span class="remove" @click="removeItem(item.i)">x</span>
       </grid-item>
     </grid-layout>
   </div>
@@ -19,7 +19,7 @@ import RedisConnection from "./RedisConnection.vue";
 import SubLabel from "./SubLabel.vue";
 import SubAngle from "./SubAngle.vue";
 import SubGraph from "./SubGraph.vue";
-import SubGraph2 from "./SubGraph2.vue";
+import SubTable from "./SubTable.vue";
 
 var GridLayout = VueGridLayout.GridLayout;
 var GridItem = VueGridLayout.GridItem;
@@ -76,6 +76,17 @@ var testLayout = [
       unit: "msec",
     },
   },
+  {
+    x: 0,
+    y: 5,
+    w: 6,
+    h: 9,
+    i: "5",
+    type: "SubTable",
+    params: {
+      pattern:"src/hover/*"
+    },
+  },
 ];
 
 export default {
@@ -99,7 +110,7 @@ export default {
     SubLabel,
     SubAngle,
     SubGraph,
-    SubGraph2,
+    SubTable,
   },
   created() {
     Eventbus.$on("Grid.save", this.saveToRedis);

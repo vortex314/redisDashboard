@@ -82,14 +82,13 @@ export const Redis = new Vue({
                     break;
 
                 default: {
-//                    console.log("Redis message", message.data);
+                    console.log("Redis reply", arr);
                     let rp = this.promises.dequeue()
                     if (rp.cmd.toLowerCase() != cmd.toLowerCase()) console.log("ERROR: ", rp.cmd, cmd)
                     rp.resolve(arr);
                     break;
                 }
             }
-//            console.log(message);
         },
         subscribe(pattern, action) {
             this.subscriptions.push({ pattern: pattern, callback: action });

@@ -1,21 +1,11 @@
 import Vue from 'vue'
 import App from './App.vue'
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
-// Import Bootstrap and BootstrapVue CSS files (order is important)
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
 
-import { BIcon, BIconArrowUp, BIconArrowDown } from 'bootstrap-vue'
+Vue.use(Vuetify)
 
-Vue.use(BootstrapVue)
-Vue.component('BIcon', BIcon)
-Vue.component('BIconArrowUp', BIconArrowUp)
-Vue.component('BIconArrowDown', BIconArrowDown)
-// Make BootstrapVue available throughout your project
-Vue.use(BootstrapVue)
-// Optionally install the BootstrapVue icon components plugin
-Vue.use(IconsPlugin)
 Vue.config.productionTip = false
 
 import ECharts from 'vue-echarts'
@@ -40,8 +30,10 @@ use([
   TooltipComponent
 ]);
 Vue.component('v-chart', ECharts)
+const vuetifyOptions = { }
 
 new Vue({
   render: h => h(App),
+  vuetify: new Vuetify(vuetifyOptions)
 }).$mount('#app')
 

@@ -62,7 +62,7 @@ export const Redis = new Vue({
             }).catch(console.log);
             this.subscriptions.forEach(subscription => {
                 this.request(["PSUBSCRIBE", subscription.pattern]).then((x) => {
-                    console.log("PSUBSCRIBE response", x)
+                    console.log("Redis response", x)
                 }).catch(console.log);
             });
         },
@@ -82,6 +82,7 @@ export const Redis = new Vue({
                     break;
 
                 default: {
+//                    console.log("Redis message", message.data);
                     let rp = this.promises.dequeue()
                     if (rp.cmd.toLowerCase() != cmd.toLowerCase()) console.log("ERROR: ", rp.cmd, cmd)
                     rp.resolve(arr);

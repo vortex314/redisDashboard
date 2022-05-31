@@ -1,24 +1,33 @@
 <template>
-  <div class="mx-1">
-    <b-btn class="button"
-      :disabled="Redis.connected"
-      v-on:click="connect"
-      >Connect</b-btn
-    >
-    <b-btn class="button"
-      :disabled="!Redis.connected"
-      v-on:click="disconnect"
-      >Disconnect</b-btn
-    >
-    <b-btn class="button"  v-on:click="saveGrid" :disabled="!Redis.connected">
-      <b-icon icon="cloud-upload" aria-hidden="true"></b-icon>
-    </b-btn>
-    <b-btn class="button"  v-on:click="loadGrid" :disabled="!Redis.connected"
-      ><b-icon icon="folder" aria-hidden="true"/></b-btn>
-    <b-btn class="button"  v-on:click="addGridItem">
-      <b-icon icon="plus" aria-hidden="true"
-    /></b-btn>
-  </div>
+  <v-app-bar class="ma-0 pa-0">
+    <v-row class="ma-0 pa-0">
+      <v-btn class="pink" :disabled="Redis.connected" @click="Redis.connect()">
+        <v-icon >mdi-lan-connect</v-icon>
+      </v-btn>
+      <v-btn class="pink" :disabled="!Redis.connected" @click="Redis.disconnect()">
+        <v-icon>mdi-lan-disconnect</v-icon>
+      </v-btn>
+      <v-btn @click="Eventbus.$emit('Grid.save')" :disabled="!Redis.connected">
+        <v-icon>mdi-content-save</v-icon>
+      </v-btn>
+      <v-btn @click="Eventbus.$emit('Grid.load')" :disabled="!Redis.connected">
+        <v-icon>mdi-folder-arrow-down-outline</v-icon>
+      </v-btn>
+      <v-btn @click="Eventbus.$emit('Grid.add')" :disabled="!Redis.connected">
+        <v-icon>mdi-shape-rectangle-plus</v-icon>
+      </v-btn>
+      <v-btn @click="Eventbus.$emit('Grid.unfreeze')">
+        <v-icon >
+          mdi-lock-open-variant-outline
+        </v-icon>
+      </v-btn>
+      <v-btn @click="Eventbus.$emit('Grid.freeze')">
+        <v-icon>
+          mdi-lock
+        </v-icon>
+      </v-btn>
+    </v-row>
+  </v-app-bar>
 </template>
 
 <script>
@@ -42,40 +51,18 @@ export default {
   data() {
     return {
       count: 0,
-      Redis,
+      Redis,Eventbus
     };
   },
   mounted() {
     console.log("RedisConnection host:" + this.host + " port " + this.port);
+    console.log(JSON.stringify(this.$props))
   },
   methods: {
-    saveGrid() {
-      console.log("emitting ");
-      Eventbus.$emit("Grid.save");
-    },
-    loadGrid() {
-      Eventbus.$emit("Grid.load");
-    },
-    addGridItem() {
-      Eventbus.$emit("Grid.add");
-    },
-    connect() {
-      Redis.connect();
-    },
-    disconnect(){
-      Redis.disconnect();
-    },
+
   },
 };
 </script>
-.button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-}
+
 <style>
 </style>

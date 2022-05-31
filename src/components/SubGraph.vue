@@ -97,6 +97,10 @@ export default {
     console.log("SubGraph label:" + this.label + " topic " + this.topic);
     this.chart = this.$children[0].chart;
   },
+  unmounted() {
+    this.sub.stop();
+    this.chart.dispose();
+  },
   methods: {
     onMessage(topic, value) {
       this.value = value.toFixed(2);

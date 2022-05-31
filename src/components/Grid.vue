@@ -1,62 +1,14 @@
 <template>
   <div class="ml-0">
-    <grid-layout
-      :layout="layout"
-      :col-num="24"
-      :row-height="15"
-      :is-draggable="true"
-      :is-resizable="true"
-      :vertical-compact="true"
-      :margin="[1, 1]"
-      :use-css-transforms="true"
-    >
-      <grid-item
-        class="m-0 p-0"
-        v-for="item in layout"
-        ref="items"
-        :key="item.i"
-        :x="item.x"
-        :y="item.y"
-        :w="item.w"
-        :h="item.h"
-        :i="item.i"
-        @resize="resizeEvent"
-        @move="moveEvent"
-        @resized="resizedEvent"
-        @moved="movedEvent"
-        @contextmenu.native="rightClickHandler($event, item.i)"
-      >
+    <grid-layout :layout="layout" :col-num="24" :row-height="15" :is-draggable="true" :is-resizable="true"
+      :vertical-compact="true" :margin="[1, 1]" :use-css-transforms="true">
+      <grid-item class="m-0 p-0" v-for="item in layout" ref="items" :key="item.i" :x="item.x" :y="item.y" :w="item.w"
+        :h="item.h" :i="item.i" @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent"
+        @contextmenu.native="rightClickHandler($event, item.i)">
         <span class="remove" @click="removeItem(item.i)">x</span>
-        <b-modal
-          :ref="'modal' + item.i"
-          hide-footer
-          title="Using Component Methods"
-        >
-          <div class="d-block text-center">
-            <h3>Hello From My Modal!</h3>
-          </div>
-          <b-button
-            class="mt-3"
-            variant="outline-danger"
-            block
-            @click="hideModal"
-            >Close Me</b-button
-          >
-          <b-button
-            class="mt-2"
-            variant="outline-warning"
-            block
-            @click="toggleModal"
-            >Toggle Me</b-button
-          >
-        </b-modal>
-        <component
-          style="{'backgroundColor':'#FC0'}"
-          :is="item.type"
-          v-bind="item.params"
-          :ref="item.i"
-        ></component> </grid-item
-    ></grid-layout>
+        <component style="{'backgroundColor':'#FC0'}" :is="item.type" v-bind="item.params" :ref="item.i"></component>
+      </grid-item>
+    </grid-layout>
   </div>
 </template>
 
@@ -153,6 +105,8 @@ export default {
     Eventbus.$on("Grid.save", this.saveToRedis);
     Eventbus.$on("Grid.load", this.loadFromRedis);
     Eventbus.$on("Grid.add", this.addGridItem);
+    Eventbus.$on("Grid.freeze", this.freezeGrid);
+    Eventbus.$on("Grid.unfreeze", this.unfreezeGrid);
   },
   mounted() {
     Redis.connect();
@@ -207,6 +161,19 @@ export default {
         console.log("Loaded from Redis", data);
       });
     },
+    freezeGrid() {
+      console.log("Freeze Grid");
+      for (let item of this.layout) {
+        item.locked = true;
+      }
+    },
+    unfreezeGrid() {
+      console.log("Unfreeze Grid");
+      for (let item of this.layout) {
+        item.locked = false;
+      }
+    },
+
     hideModal() {
       this.$refs[this.index][0].hide();
     },

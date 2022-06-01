@@ -90,7 +90,7 @@ export default {
         },
         tooltip: {
           trigger: "item",
-          formatter: "{a} <br/>{b} : {c} ({d}%)",
+          formatter: "{b} : {c}",
         },
         legend: {
           orient: "vertical",
@@ -103,7 +103,8 @@ export default {
             max: 180,
             startAngle: 270,
             endAngle: -90,
-            radius: "80%",
+            splitNumber:8,
+            radius: "90%",
             progress: {
               show: false,
             },

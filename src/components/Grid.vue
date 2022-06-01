@@ -2,10 +2,10 @@
   <div class="ml-0">
     <grid-layout :layout="layout" :col-num="24" :row-height="15" :is-draggable="true" :is-resizable="true"
       :vertical-compact="true" :margin="[1, 1]" :use-css-transforms="true">
-      <grid-item class="m-0 p-0" v-for="item in layout" ref="items" :key="item.i" :x="item.x" :y="item.y" :w="item.w"
-        :h="item.h" :i="item.i" @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent"
-        @contextmenu.native="rightClickHandler($event, item.i)">       
-        <component style="{'backgroundColor':'#FC0'}" :is="item.type" v-bind="item.params" :ref="item.i"></component>
+      <grid-item class="m-0 p-0" v-for="item in layout" :key="item.i" :x="item.x" :y="item.y" :w="item.w" :h="item.h"
+        :i="item.i" @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent">
+        <component style="{'backgroundColor':'#FC0'}" :is="item.type" v-bind="item.params" :ref="item.i"
+          @contextmenu.native="rightClickHandler($event, item)"></component>
         <span class="remove" @click="removeItem(item.i)">x</span>
       </grid-item>
     </grid-layout>
@@ -73,7 +73,7 @@ var testLayout = [
     params: {
       label: "Latency",
       topic: "src/hover/system/latency",
-      unit: "msec",
+      unit: "usec",
     },
   },
   {
@@ -84,7 +84,7 @@ var testLayout = [
     i: "5",
     type: "SubTable",
     params: {
-      pattern:"src/hover/*"
+      pattern: "src/hover/*"
     },
   },
 ];
@@ -149,13 +149,11 @@ export default {
       const index = this.layout.map((item) => item.i).indexOf(val);
       this.layout.splice(index, 1);
     },
-    rightClickHandler(event, arg) {
-      console.log("rightClickHandler", arg, event);
+    rightClickHandler(event,  item) {
+      
+      console.log(JSON.stringify(item.params))
+      item.params.label = "HELLO";
       event.preventDefault();
-      this.index = "modal" + arg;
-      var modalBox = this.$refs[this.index]
-      console.log(modalBox);
-      modalBox[0].show();
     },
     saveToRedis() {
       var serialized = JSON.stringify(this.layout);
@@ -181,13 +179,6 @@ export default {
       for (let item of this.layout) {
         item.locked = false;
       }
-    },
-
-    hideModal() {
-      this.$refs[this.index][0].hide();
-    },
-    toggleModal() {
-      this.$refs[this.index][0].toggle();
     },
   },
 };

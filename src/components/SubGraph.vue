@@ -52,7 +52,6 @@ export default {
       value: 0,
       classState: "m-0 p-0 dead",
       manualUpdate: true,
-//      ts: [],
     };
   },
   mounted() {
@@ -94,6 +93,9 @@ export default {
             label: {
               backgroundColor: "#6a7985",
             },
+          },
+          valueFormatter:(value) => {
+            return value + " " + this.unit;
           },
         },
         xAxis: {

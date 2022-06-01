@@ -1,4 +1,10 @@
-# dashboard
+# Redis Dashboard
+
+A customizable dashboard for my IOT and Robotics projects. It connects via ws2redis web sockets to a Redis instance.
+
+![Alt text](doc/sampleDashboard.png "Sample")
+
+
 
 ## Project setup
 ```

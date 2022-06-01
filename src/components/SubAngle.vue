@@ -4,7 +4,6 @@
 </template>
 
 <script>
-import { Redis, Eventbus, Timer } from "../Redis.js";
 import { Sub } from "../Sub.js";
 import { use } from "echarts/core";
 import { CanvasRenderer, SVGRenderer } from "echarts/renderers";
@@ -48,9 +47,6 @@ export default {
     return {
       classState: "alive",
       manualUpdate: true,
-      Redis,
-      Eventbus,
-      Timer,
       alive:false,
 
     };

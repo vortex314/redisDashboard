@@ -1,27 +1,27 @@
 <template>
 <v-container>
-  <v-row align="center" justify="space-around">
-    <v-btn color="primary" :disabled="Redis.connected" @click="Redis.connect()">
+  <v-row >
+    <v-btn color="primary" :disabled="RedisState.connected" @click="connect()">
       <v-icon>mdi-lan-connect</v-icon>
     </v-btn>
-    <v-btn color="primary" :disabled="!Redis.connected" @click="Redis.disconnect()">
+    <v-btn color="primary" :disabled="!RedisState.connected" @click="disconnect()">
       <v-icon>mdi-lan-disconnect</v-icon>
     </v-btn>
-    <v-btn @click="Eventbus.$emit('Grid.save')" :disabled="!Redis.connected" color="primary">
+    <v-btn @click="gridSave" :disabled="!RedisState.connected" color="primary">
       <v-icon>mdi-content-save</v-icon>
     </v-btn>
-    <v-btn @click="Eventbus.$emit('Grid.load')" :disabled="!Redis.connected" color="primary">
+    <v-btn @click="gridLoad" :disabled="!RedisState.connected" color="primary">
       <v-icon>mdi-folder-arrow-down-outline</v-icon>
     </v-btn>
-    <v-btn @click="Eventbus.$emit('Grid.add')" :disabled="!Redis.connected" color="primary">
+    <v-btn @click="gridAdd" :disabled="!RedisState.connected" color="primary">
       <v-icon>mdi-shape-rectangle-plus</v-icon>
     </v-btn>
-    <v-btn @click="Eventbus.$emit('Grid.unfreeze')" color="primary">
+    <v-btn @click="gridUnfreeze" color="primary">
       <v-icon>
         mdi-lock-open-variant-outline
       </v-icon>
     </v-btn>
-    <v-btn @click="Eventbus.$emit('Grid.freeze')" color="primary">
+    <v-btn @click="gridFreeze" color="primary">
       <v-icon>
         mdi-lock
       </v-icon>
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { Redis, Eventbus } from "../Redis.js";
+import { Redis, Eventbus ,RedisState} from "../Redis.js";
 export default {
   name: "RedisConnection",
   props: {
@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       count: 0,
-      Redis, Eventbus
+      RedisState
     };
   },
   mounted() {
@@ -59,8 +59,31 @@ export default {
     console.log(JSON.stringify(this.$props))
   },
   methods: {
-
+    connect() {
+      Redis.connect(this.host, this.port, this.path);
+    },
+    disconnect() {
+      Redis.disconnect();
+    },
+    gridSave() {
+      Eventbus.$emit('Grid.save');
+    },
+    gridLoad() {
+      Eventbus.$emit('Grid.load');
+    },
+    gridAdd() {
+      Eventbus.$emit('Grid.add');
+    },
+    gridFreeze() {
+      Eventbus.$emit('Grid.freeze');
+    },
+    gridUnfreeze() {
+      Eventbus.$emit('Grid.unfreeze');
+    },
   },
+  watch:{
+    
+  }
 };
 </script>
 

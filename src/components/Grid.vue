@@ -93,8 +93,6 @@ export default {
   name: "GridVue",
   data() {
     return {
-      Redis,
-      Eventbus,
       colorPrimary: "success",
       timer: {},
       count: 0,

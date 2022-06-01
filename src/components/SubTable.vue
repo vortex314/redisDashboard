@@ -3,7 +3,6 @@
 </template>
 
 <script>
-import { Redis, Eventbus, Timer } from "../Redis.js";
 import { Sub } from "../Sub.js";
 import _ from "lodash";
 export default {
@@ -20,7 +19,6 @@ export default {
       headers: [{text:"Topic",value:"topic",class:"blue lighten-5"},{text:"Value",value:"value",class:"blue lighten-5"}],
       kv:[],
       classState:'m-0 p-0 text-center dead',
-      Redis,Eventbus,Timer
     };
   },
   mounted() {

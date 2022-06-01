@@ -4,7 +4,6 @@
 </template>
 
 <script>
-import { Redis, Eventbus, Timer } from "../Redis.js";
 import { Sub } from "../Sub.js";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
@@ -54,9 +53,6 @@ export default {
       classState: "m-0 p-0 dead",
       manualUpdate: true,
 //      ts: [],
-      Redis,
-      Eventbus,
-      Timer,
     };
   },
   mounted() {

@@ -25,6 +25,15 @@ export default {
     this.sub =  new Sub(this.pattern, 1000, this.onMessage,this.onTimeout );
     console.log("SubTable  pattern " + this.pattern);
   },
+  unmounted() {
+    this.sub.unsubscribe(this.pattern,this.onMessage);
+    this.chart.dispose();
+  },
+  watch : {
+    pattern: function(newVal) {
+      this.sub.subscribe(newVal,this.onMessage);
+    }
+  },
   methods: {
     onMessage(topic, message) {
   //    console.log("SubLabel.update topic:" + topic + " message:" + message);

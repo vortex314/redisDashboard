@@ -8,6 +8,11 @@ export  class Sub {
         this.timer = Timer.create(this.timeoutCallback, this.timeout);
         Redis.subscribe(this.pattern, this.callback);
     }
+    subscribe(pattern){
+        Redis.unsubscribe(this.pattern);
+        this.pattern = pattern;
+        Redis.subscribe(this.pattern, this.callback);
+    }
     unsubscribe() {
         Redis.unsubscribe(this.pattern, this.callback);
         this.timer.stop();

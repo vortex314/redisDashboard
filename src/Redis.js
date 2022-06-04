@@ -96,8 +96,12 @@ class RedisClass {
             default: {
                 console.log("Redis reply", arr);
                 let rp = this.promises.dequeue()
-                if (rp.cmd.toLowerCase() != cmd.toLowerCase()) console.log("ERROR: ", rp.cmd, cmd)
-                rp.resolve(arr);
+                if (rp.cmd.toLowerCase() != cmd.toLowerCase()) {
+                    console.log("ERROR: ", rp.cmd, cmd)
+                    rp.reject("Redis reply error " + rp.cmd + " != " + cmd);
+                } else {
+                    rp.resolve(arr);
+                }
                 break;
             }
         }
@@ -107,6 +111,16 @@ class RedisClass {
         if (this.connected) {
             this.request(["PSUBSCRIBE", pattern]).then((x) => {
                 console.log("PSUBSCRIBE response", x)
+            }).catch(console.log);
+        }
+    }
+    unsubscribe(pattern, callback) {
+        this.subscriptions = this.subscriptions.filter(subscription => {
+            return subscription.pattern != pattern && subscription.callback != callback;
+        });
+        if (this.connected) {
+            this.request(["PUNSUBSCRIBE", pattern]).then((x) => {
+                console.log("PUNSUBSCRIBE response", x)
             }).catch(console.log);
         }
     }

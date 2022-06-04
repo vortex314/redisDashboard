@@ -3,12 +3,19 @@
     <grid-layout :layout="layout" :col-num="24" :row-height="15" :is-draggable="true" :is-resizable="true"
       :vertical-compact="true" :margin="[1, 1]" :use-css-transforms="true">
       <grid-item class="m-0 p-0" v-for="item in layout" :key="item.i" :x="item.x" :y="item.y" :w="item.w" :h="item.h"
-        :i="item.i" @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent">
+        :i="item.i" @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent"
+        @contextmenu.native="rightClickHandler($event, item)">
         <component style="{'backgroundColor':'#FC0'}" :is="item.type" v-bind="item.params" :ref="item.i"
-          @contextmenu.native="rightClickHandler($event, item)"></component>
+          @contextmenu.native="rightClickHandler($event, item)">
+        </component>
         <span class="remove" @click="removeItem(item.i)">x</span>
       </grid-item>
     </grid-layout>
+    <v-dialog v-model="showModal" width="600">
+      <config-editor :config="config" @configChanged="configChanged"></config-editor>
+      <v-btn @click="saveConfig">Save</v-btn>
+      <v-btn @click="cancelConfig">Cancel</v-btn>
+    </v-dialog>
   </div>
 </template>
 
@@ -20,6 +27,8 @@ import SubLabel from "./SubLabel.vue";
 import SubAngle from "./SubAngle.vue";
 import SubGraph from "./SubGraph.vue";
 import SubTable from "./SubTable.vue";
+import ConfigEditor from "./ConfigEditor.vue";
+// import _ from "lodash";
 
 var GridLayout = VueGridLayout.GridLayout;
 var GridItem = VueGridLayout.GridItem;
@@ -94,10 +103,14 @@ export default {
   data() {
     return {
       colorPrimary: "success",
+      showModal: false,
       timer: {},
       count: 0,
       layout: testLayout,
       index: "7",
+      config: {},
+      newConfig: {},
+      currentItem: {},
     };
   },
   props: {},
@@ -109,6 +122,7 @@ export default {
     SubAngle,
     SubGraph,
     SubTable,
+    ConfigEditor,
   },
   created() {
     Eventbus.$on("Grid.save", this.saveToRedis);
@@ -149,11 +163,27 @@ export default {
       const index = this.layout.map((item) => item.i).indexOf(val);
       this.layout.splice(index, 1);
     },
-    rightClickHandler(event,  item) {
-      
+    rightClickHandler(event, item) {
+      this.currentItem = item;
       console.log(JSON.stringify(item.params))
-      item.params.label = "HELLO";
+      this.config = item.params;
+      this.config.type = item.type;
+      console.log(JSON.stringify(this.config))
+      this.showModal = true;
       event.preventDefault();
+    },
+    saveConfig() {
+      console.log(JSON.stringify(this.newConfig))
+      this.currentItem.params = this.newConfig;
+      console.log(JSON.stringify(this.currentItem))
+      this.showModal = false;
+    },
+    cancelConfig() {
+      this.showModal = false;
+    },
+    configChanged(newConfig) {
+      console.log("configChanged", newConfig);
+      this.newConfig = newConfig;
     },
     saveToRedis() {
       var serialized = JSON.stringify(this.layout);
@@ -211,6 +241,10 @@ export default {
 
 .vue-grid-item.static {
   background: #cce;
+}
+
+.vue-grid-item {
+  overflow: hidden;
 }
 
 .vue-grid-item .text {

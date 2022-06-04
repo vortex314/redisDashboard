@@ -1,5 +1,5 @@
 <template>
-  <v-data-table disable-pagination :headers="headers" :items="kv" :items-per-page="5" class="elevation-1"></v-data-table>
+  <v-data-table disable-pagination :headers="headers" :items="kv" :items-per-page="5" class="elevation-1" :key="key"></v-data-table>
 </template>
 
 <script>
@@ -16,6 +16,7 @@ export default {
   data() {
     return {
       count: 0,
+      key:0,
       headers: [{text:"Topic",value:"topic",class:"blue lighten-5"},{text:"Value",value:"value",class:"blue lighten-5"}],
       kv:[],
       classState:'m-0 p-0 text-center dead',
@@ -30,8 +31,17 @@ export default {
     this.chart.dispose();
   },
   watch : {
-    pattern: function(newVal) {
-      this.sub.subscribe(newVal,this.onMessage);
+    '$props':function(oldVal,newVal){
+      console.log("SubTable.props changed from " + oldVal + " to " + newVal);
+      console.log("SubTable.watch props");
+
+    },
+    pattern: function(newVal,oldVal) {
+      this.key = Math.round(Math.random() * 1000)
+      console.log("SubTable.pattern changed from " + oldVal + " to " + newVal);
+   /*   this.sub.unsubscribe(oldVal,this.onMessage);
+      this.kv=[];
+      this.sub.subscribe(newVal,this.onMessage);*/
     }
   },
   methods: {

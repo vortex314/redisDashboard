@@ -1,6 +1,11 @@
 <template>
-  <v-chart :class="classState" :option="chartOptions" :update-options="{ notMerge: false }" autoresize
-    :manual-update="manualUpdate" />
+  <v-chart
+    :class="classState"
+    :option="chartOptions"
+    :update-options="{ notMerge: false }"
+    autoresize
+    :manual-update="manualUpdate"
+  />
 </template>
 
 <script>
@@ -15,7 +20,8 @@ import {
 } from "echarts/components";
 import VChart, { THEME_KEY } from "vue-echarts";
 use([
-  CanvasRenderer, SVGRenderer,
+  CanvasRenderer,
+  SVGRenderer,
   GaugeChart,
   TitleComponent,
   TooltipComponent,
@@ -47,9 +53,15 @@ export default {
     return {
       classState: "alive",
       manualUpdate: true,
-      alive:false,
-
+      alive: false,
     };
+  },
+  watch: {
+    topic: function (newVal, oldVal) {
+      console.log(this.name + "watch topic newVal:" + newVal + " oldVal:" + oldVal);
+      this.sub.unsubscribe(oldVal, this.onMessage);
+      this.sub.subscribe(newVal, this.onMessage);
+    },
   },
   mounted() {
     this.sub = new Sub(this.topic, 2000, this.onMessage, this.onTimeout);
@@ -65,14 +77,18 @@ export default {
     onMessage(topic, message) {
       this.value = message.toFixed(2);
       this.sub.resetTimer();
-      if ( !this.alive ) {
+      if (!this.alive) {
         this.alive = true;
         this.classState = "alive";
-      } 
-      this.chart.setOption({ series: [{ data: [{ value: this.value, name: this.label }] }] }, false, true);
+      }
+      this.chart.setOption(
+        { series: [{ data: [{ value: this.value, name: this.label }] }] },
+        false,
+        true
+      );
     },
     onTimeout() {
-      if ( this.alive ) {
+      if (this.alive) {
         this.alive = false;
         this.classState = "m-0 p-0 dead";
       }
@@ -103,7 +119,7 @@ export default {
             max: 180,
             startAngle: 270,
             endAngle: -90,
-            splitNumber:8,
+            splitNumber: 8,
             radius: "90%",
             progress: {
               show: false,
@@ -120,8 +136,8 @@ export default {
             ],
           },
         ],
-      }
-    }
+      };
+    },
   },
 };
 </script>

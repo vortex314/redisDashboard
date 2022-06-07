@@ -1,20 +1,56 @@
 <template>
   <div class="ml-0">
-    <grid-layout :layout="layout" :col-num="24" :row-height="15" :is-draggable="true" :is-resizable="true"
-      :vertical-compact="true" :margin="[1, 1]" :use-css-transforms="true">
-      <grid-item class="m-0 p-0" v-for="item in layout" :key="item.i" :x="item.x" :y="item.y" :w="item.w" :h="item.h"
-        :i="item.i" @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent"
-        @contextmenu.native="rightClickHandler($event, item)">
-        <component style="{'backgroundColor':'#FC0'}" :is="item.type" v-bind="item.params" :ref="item.i"
-          @contextmenu.native="rightClickHandler($event, item)">
+    <grid-layout
+      :layout="layout"
+      :col-num="24"
+      :row-height="15"
+      :is-draggable="true"
+      :is-resizable="true"
+      :vertical-compact="true"
+      :margin="[1, 1]"
+      :use-css-transforms="true"
+    >
+      <grid-item
+        class="m-0 p-0"
+        v-for="item in layout"
+        :key="item.i"
+        :x="item.x"
+        :y="item.y"
+        :w="item.w"
+        :h="item.h"
+        :i="item.i"
+        @resize="resizeEvent"
+        @move="moveEvent"
+        @resized="resizedEvent"
+        @moved="movedEvent"
+      >
+        <component
+          style="{'backgroundColor':'#FC0'}"
+          :is="item.type"
+          :config="item.config"
+          :ref="item.i"
+          @contextmenu.native="rightClickHandler($event, item)"
+        >
         </component>
+
         <span class="remove" @click="removeItem(item.i)">x</span>
       </grid-item>
     </grid-layout>
-    <v-dialog v-model="showModal" width="600">
-      <config-editor :config="config" @configChanged="configChanged"></config-editor>
-      <v-btn @click="saveConfig">Save</v-btn>
-      <v-btn @click="cancelConfig">Cancel</v-btn>
+    <v-dialog v-model="showSelection" width="400" >
+      <v-select
+        :items="widgetList"
+        v-model="index"
+        label="Widget"
+        @change="onSelect"
+      ></v-select>
+    </v-dialog>
+    <v-dialog v-model="showEditor">
+      <config-editor
+        :config="currentItemConfig"
+        :widget-list="widgetList"
+        @configSave="configSave"
+        @configCancel="configCancel"
+      ></config-editor>
     </v-dialog>
   </div>
 </template>
@@ -22,6 +58,7 @@
 <script>
 import { Redis, Eventbus } from "../Redis.js";
 import VueGridLayout from "vue-grid-layout";
+import EmptyGrid from "./EmptyGrid.vue";
 import RedisConnection from "./RedisConnection.vue";
 import SubLabel from "./SubLabel.vue";
 import SubAngle from "./SubAngle.vue";
@@ -38,63 +75,10 @@ var testLayout = [
     y: 0,
     w: 11,
     h: 3,
-    i: "0",
+    i: "item-0",
     type: "RedisConnection",
-    params: { host: "limero.ddns.net", port: 9000, path: "/redis" },
+    config: { host: "limero.ddns.net", port: 9000, path: "/redis" },
     moved: false,
-  },
-  {
-    x: 0,
-    y: 3,
-    w: 6,
-    h: 2,
-    i: "1",
-    type: "SubLabel",
-    params: { label: "Voltage", topic: "src/hover/motor/voltage", unit: "V" },
-    moved: false,
-  },
-  {
-    x: 6,
-    y: 3,
-    w: 5,
-    h: 2,
-    i: "2",
-    type: "SubLabel",
-    params: { label: "Angle", topic: "src/hover/motor/angle", unit: "°" },
-    moved: false,
-  },
-  {
-    x: 0,
-    y: 5,
-    w: 6,
-    h: 9,
-    i: "3",
-    type: "SubAngle",
-    params: { label: "Angle", topic: "src/hover/motor/angle", unit: "°" },
-  },
-  {
-    x: 0,
-    y: 5,
-    w: 6,
-    h: 9,
-    i: "4",
-    type: "SubGraph",
-    params: {
-      label: "Latency",
-      topic: "src/hover/system/latency",
-      unit: "usec",
-    },
-  },
-  {
-    x: 0,
-    y: 5,
-    w: 6,
-    h: 9,
-    i: "5",
-    type: "SubTable",
-    params: {
-      pattern: "src/hover/*"
-    },
   },
 ];
 
@@ -103,14 +87,16 @@ export default {
   data() {
     return {
       colorPrimary: "success",
-      showModal: false,
+      showEditor: false,
+      showSelection: false,
       timer: {},
       count: 0,
       layout: testLayout,
       index: "7",
-      config: {},
+      currentItemConfig: {},
       newConfig: {},
       currentItem: {},
+      widgetList: ["SubTable", "SubGraph", "SubAngle", "SubLabel"],
     };
   },
   props: {},
@@ -123,6 +109,7 @@ export default {
     SubGraph,
     SubTable,
     ConfigEditor,
+    EmptyGrid,
   },
   created() {
     Eventbus.$on("Grid.save", this.saveToRedis);
@@ -130,6 +117,8 @@ export default {
     Eventbus.$on("Grid.add", this.addGridItem);
     Eventbus.$on("Grid.freeze", this.freezeGrid);
     Eventbus.$on("Grid.unfreeze", this.unfreezeGrid);
+    Eventbus.$on("Grid.configSave", this.configSave);
+    Eventbus.$on("Grid.configCancel", this.configCancel);
   },
   mounted() {
     Redis.connect();
@@ -148,13 +137,16 @@ export default {
       console.log("RESIZED i=" + i + ", H=" + newH + ", W=" + newW);
     },
     addGridItem: function () {
+      console.log("addGridItem");
       // Add a new item. It must have a unique key!
       this.layout.push({
         x: (this.layout.length * 2) % (this.colNum || 12),
         y: this.layout.length + (this.colNum || 12), // puts it at the bottom
         w: 2,
         h: 2,
-        i: this.index,
+        i: "item-" + this.index.toString(),
+        type: "EmptyGrid",
+        config: {},
       });
       // Increment the counter to ensure key is always unique.
       this.index++;
@@ -164,26 +156,39 @@ export default {
       this.layout.splice(index, 1);
     },
     rightClickHandler(event, item) {
+      console.log(event, item);
       this.currentItem = item;
-      console.log(JSON.stringify(item.params))
-      this.config = item.params;
-      this.config.type = item.type;
-      console.log(JSON.stringify(this.config))
-      this.showModal = true;
+
+      if (item.type == "EmptyGrid") {
+        this.showSelection = true;
+      } else {
+        if (Object.keys(this.currentItem.config) == 0) {
+          // retrieve default config of widget
+          this.vueChild = this.$refs[item.i][0]; // refs are always an array
+          this.currentItemConfig = JSON.parse(
+            JSON.stringify(this.vueChild._props)
+          );
+        } else {
+          // use current config
+          this.currentItemConfig = this.currentItem.config;
+        }
+        this.showEditor = true;
+      }
       event.preventDefault();
     },
-    saveConfig() {
-      console.log(JSON.stringify(this.newConfig))
-      this.currentItem.params = this.newConfig;
-      console.log(JSON.stringify(this.currentItem))
-      this.showModal = false;
+    onSelect(v) {
+      console.log(v);
+      this.currentItem.type = v;
+      this.showSelection = false;
     },
-    cancelConfig() {
-      this.showModal = false;
+    configSave(newConfig) {
+      console.log("configSave", newConfig);
+      this.currentItem.config = newConfig;
+      this.showEditor = false;
     },
-    configChanged(newConfig) {
-      console.log("configChanged", newConfig);
-      this.newConfig = newConfig;
+    configCancel() {
+      console.log("configCancel");
+      this.showEditor = false;
     },
     saveToRedis() {
       var serialized = JSON.stringify(this.layout);

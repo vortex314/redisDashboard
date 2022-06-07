@@ -68,12 +68,12 @@ class RedisClass {
         console.log("Redis connected");
         this.connected = true;
         RedisState.connected = true;
-        this.request(["hello", "3"]).then((x) => {
-            console.log("hello response ", x)
+        this.request(["hello", "3"]).then(() => {
+           //  console.log("hello response", x)
         }).catch(console.log);
         this.subscriptions.forEach(subscription => {
-            this.request(["PSUBSCRIBE", subscription.pattern]).then((x) => {
-                console.log("Redis response", x)
+            this.request(["PSUBSCRIBE", subscription.pattern]).then(() => {
+               //  console.log("Redis response", x)
             }).catch(console.log);
         });
     }

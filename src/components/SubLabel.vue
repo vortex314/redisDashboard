@@ -1,5 +1,5 @@
 <template>
-  <div :class="classState" >{{ label }} : {{ value }} {{ unit }}</div>
+  <div :class="classState">{{ label }} : {{ value }} {{ unit }}</div>
 </template>
 
 <script>
@@ -25,29 +25,40 @@ export default {
     return {
       count: 0,
       value: 0,
-      classState:'m-0 p-0 text-center dead',
-      Redis,Eventbus,Timer
+      classState: "m-0 p-0 text-center dead",
+      Redis,
+      Eventbus,
+      Timer,
     };
   },
   mounted() {
-    this.sub =  new Sub(this.topic, 1000, this.onMessage,this.onTimeout );
+    this.sub = new Sub(this.topic, 1000, this.onMessage, this.onTimeout);
     console.log("SubLabel label:" + this.label + " topic " + this.topic);
+  },
+  unmounted() {
+    this.sub.unsubscribe(this.pattern, this.onMessage);
+    this.chart.dispose();
+  },
+  watch: {
+    topic: function (newVal, oldVal) {
+      console.log("SubLabel.watch topic:" + newVal + " oldVal:" + oldVal);
+      this.sub.unsubscribe(oldVal, this.onMessage);
+      this.sub.subscribe(newVal, this.onMessage);
+    },
   },
   methods: {
     onMessage(topic, message) {
-  //    console.log("SubLabel.update topic:" + topic + " message:" + message);
+      //    console.log("SubLabel.update topic:" + topic + " message:" + message);
       this.count++;
       this.value = message.toFixed(2);
-      this.sub.resetTimer()
-      this.classState = 'm-0 p-0 text-center alive';
+      this.sub.resetTimer();
+      this.classState = "m-0 p-0 text-center alive";
     },
     onTimeout() {
-      this.classState = 'm-0 p-0 text-center dead';
+      this.classState = "m-0 p-0 text-center dead";
     },
   },
-  computed : {
-    
-  },
+  computed: {},
 };
 </script>
 

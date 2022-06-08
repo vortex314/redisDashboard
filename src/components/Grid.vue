@@ -77,7 +77,7 @@ var testLayout = [
     h: 3,
     i: "item-0",
     type: "RedisConnection",
-    config: { host: "limero.ddns.net", port: 9000, path: "/redis" },
+    config: { host: "limero.ddns.net", port: 9001, path: "/redis" },
     moved: false,
   },
 ];

@@ -41,7 +41,7 @@ export default {
     },
     port: {
       type: Number,
-      default: 9000,
+      default: 9001,
     },
     path: {
       type: String,

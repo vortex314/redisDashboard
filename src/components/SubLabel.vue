@@ -10,15 +10,15 @@ export default {
   props: {
     label: {
       type: String,
-      default: "LABEL",
+      default: "Shaker2",
     },
     topic: {
       type: String,
-      default: "VALUE",
+      default: "dst/shaker2/shake/trigger",
     },
     unit: {
       type: String,
-      default: "UNIT",
+      default: "",
     },
   },
   data() {
@@ -32,7 +32,7 @@ export default {
     };
   },
   mounted() {
-    this.sub = new Sub(this.topic, 1000, this.onMessage, this.onTimeout);
+    this.sub = new Sub(this.topic, 60000, this.onMessage, this.onTimeout);
     console.log("SubLabel label:" + this.label + " topic " + this.topic);
   },
   unmounted() {

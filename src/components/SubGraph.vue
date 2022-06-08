@@ -1,6 +1,11 @@
 <template>
-  <v-chart :class="classState" :option="chartOptions" :update-options="{ notMerge: false }" autoresize
-    :manual-update="manualUpdate" />
+  <v-chart
+    :class="classState"
+    :option="chartOptions"
+    :update-options="{ notMerge: false }"
+    autoresize
+    :manual-update="manualUpdate"
+  />
 </template>
 
 <script>
@@ -13,7 +18,7 @@ import {
   TooltipComponent,
   LegendComponent,
   DatasetComponent,
-  GridComponent
+  GridComponent,
 } from "echarts/components";
 import VChart, { THEME_KEY } from "vue-echarts";
 use([
@@ -23,7 +28,7 @@ use([
   TooltipComponent,
   LegendComponent,
   DatasetComponent,
-  GridComponent
+  GridComponent,
 ]);
 export default {
   name: "SubGraph",
@@ -34,17 +39,14 @@ export default {
     [THEME_KEY]: "light",
   },
   props: {
-    label: {
-      type: String,
-      default: "LABEL-TBD",
-    },
-    topic: {
-      type: String,
-      default: "VALUE-TBD",
-    },
-    unit: {
-      type: String,
-      default: "UNIT-TBD",
+    config: {
+      type: Object,
+      default: () => ({
+        label: "LABELDUMMY",
+        topic: "TOPICDUMMY",
+        unit: "UNITDUMMY",
+        timeout:3000,
+      }),
     },
   },
   data() {
@@ -54,9 +56,20 @@ export default {
       manualUpdate: true,
     };
   },
+  watch: {
+    config: function (newConfig, oldConfig) {
+      console.log(
+        this.name + "watch topic newVal:" + newConfig + " oldVal:" + oldConfig
+      );
+      this.sub.unsubscribe(oldConfig.topic, this.onMessage);
+      this.sub.subscribe(newConfig.topic, this.onMessage);
+      this.chart.setOption(this.chartOptions);
+      this.ts = [];
+    },
+  },
   mounted() {
-    this.sub = new Sub(this.topic, 1000, this.onMessage, this.onTimeout);
-    console.log("SubGraph label:" + this.label + " topic " + this.topic);
+    this.sub = new Sub(this.config.topic, this.config.timeout, this.onMessage, this.onTimeout);
+    console.log("SubGraph mounted ", this.config);
     this.chart = this.$children[0].chart;
     this.ts = [];
   },
@@ -84,7 +97,7 @@ export default {
       console.log("SubGraph.chartOptions");
       return {
         title: {
-          text: this.topic,
+          text: this.config.topic,
         },
         tooltip: {
           trigger: "axis",
@@ -94,8 +107,8 @@ export default {
               backgroundColor: "#6a7985",
             },
           },
-          valueFormatter:(value) => {
-            return value + " " + this.unit;
+          valueFormatter: (value) => {
+            return value + " " + this.config.unit;
           },
         },
         xAxis: {
@@ -104,7 +117,7 @@ export default {
         yAxis: { type: "value" },
         series: [
           {
-            name: this.label,
+            name: this.config.label,
             animation: false,
             type: "line",
             data: this.ts,
@@ -114,11 +127,10 @@ export default {
             ],
           },
         ],
-      }
-    }
-  }
-}
-
+      };
+    },
+  },
+};
 </script>
 
 <style>

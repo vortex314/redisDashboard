@@ -27,7 +27,7 @@
         <component
           style="{'backgroundColor':'#FC0'}"
           :is="item.type"
-          :config="item.config"
+          v-bind="item.config"
           :ref="item.i"
           @contextmenu.native="rightClickHandler($event, item)"
         >
@@ -139,12 +139,13 @@ export default {
     addGridItem: function () {
       console.log("addGridItem");
       // Add a new item. It must have a unique key!
+      var newKey = "item-"+Math.round(Math.random()*1000000);
       this.layout.push({
         x: (this.layout.length * 2) % (this.colNum || 12),
         y: this.layout.length + (this.colNum || 12), // puts it at the bottom
         w: 2,
         h: 2,
-        i: "item-" + this.index.toString(),
+        i: newKey,
         type: "EmptyGrid",
         config: {},
       });
@@ -200,7 +201,7 @@ export default {
     loadFromRedis() {
       Redis.request(["get", "dashboard"]).then((data) => {
         this.layout = JSON.parse(data[1]);
-        console.log("Loaded from Redis", data);
+        console.log("Grid load", this.layout);
       });
     },
     freezeGrid() {

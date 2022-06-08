@@ -139,7 +139,7 @@ class RedisClass {
             alert("Redis not connected");
             return
         }
-        console.log("Redis command: ", arr);
+        console.log("Redis request: ", arr);
         this.ws.send(JSON.stringify(arr));
     }
 

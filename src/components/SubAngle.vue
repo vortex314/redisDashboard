@@ -1,11 +1,6 @@
 <template>
-  <v-chart
-    :class="classState"
-    :option="chartOptions"
-    :update-options="{ notMerge: false }"
-    autoresize
-    :manual-update="manualUpdate"
-  />
+  <v-chart :class="classState" :option="chartOptions" :update-options="{ notMerge: false }" autoresize
+    :manual-update="manualUpdate" />
 </template>
 
 <script>
@@ -49,9 +44,59 @@ export default {
   data() {
     return {
       classState: "alive",
-      manualUpdate: true,
+      manualUpdate: false,
       alive: false,
-      chartOptions: {
+      
+    };
+  },
+  watch: {
+    config: {
+      handler(newConfig, oldConfig) {
+        console.log(
+          this.name + "watch topic newVal:" + newConfig + " oldVal:" + oldConfig
+        );
+        this.sub.unsubscribe(oldConfig.topic, this.onMessage);
+        this.sub.subscribe(newConfig.topic, this.onMessage);
+        this.chart.setOption(this.chartOptions);
+      },
+      deep: true
+      //      this.ts = [];
+    },
+  },
+  mounted() {
+    this.sub = new Sub(this.config.topic, this.config.timeout, this.onMessage, this.onTimeout);
+    console.log("SubAngle label:" + this.config.label + " topic " + this.config.topic);
+    this.chart = this.$children[0].chart;
+    this.value = 0;
+  },
+  unmounted() {
+    this.sub.stop();
+    this.chart.dispose();
+  },
+  methods: {
+    onMessage(topic, message) {
+      this.value = message.toFixed(2);
+      this.sub.resetTimer();
+      if (!this.alive) {
+        this.alive = true;
+        this.classState = "alive";
+      }
+      this.chart.setOption(
+        { series: [{ data: [{ value: this.value, name: this.config.label }] }] },
+        false,
+        true
+      );
+    },
+    onTimeout() {
+      if (this.alive) {
+        this.alive = false;
+        this.classState = "m-0 p-0 dead";
+      }
+    },
+  },
+  computed: {
+    chartOptions() {
+      return {
         manualUpdate: false,
         zlevel: 0,
         title: {
@@ -90,52 +135,9 @@ export default {
             ],
           },
         ],
-      },
-    };
-  },
-  watch: {
-    config: function (newConfig, oldConfig) {
-      console.log(
-        this.name + "watch topic newVal:" + newConfig + " oldVal:" + oldConfig
-      );
-      this.sub.unsubscribe(oldConfig.topic, this.onMessage);
-      this.sub.subscribe(newConfig.topic, this.onMessage);
-//      this.chart.setOption(this.chartOptions);
-//      this.ts = [];
-    },
-  },
-  mounted() {
-    this.sub = new Sub(this.config.topic, this.config.timeout, this.onMessage, this.onTimeout);
-    console.log("SubAngle label:" + this.config.label + " topic " + this.config.topic);
-    this.chart = this.$children[0].chart;
-    this.value = 0;
-  },
-  unmounted() {
-    this.sub.stop();
-    this.chart.dispose();
-  },
-  methods: {
-    onMessage(topic, message) {
-      this.value = message.toFixed(2);
-      this.sub.resetTimer();
-      if (!this.alive) {
-        this.alive = true;
-        this.classState = "alive";
       }
-      this.chart.setOption(
-        { series: [{ data: [{ value: this.value, name: this.config.label }] }] },
-        false,
-        true
-      );
-    },
-    onTimeout() {
-      if (this.alive) {
-        this.alive = false;
-        this.classState = "m-0 p-0 dead";
-      }
-    },
+    }
   },
-  computed: {},
 };
 </script>
 

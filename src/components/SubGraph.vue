@@ -1,11 +1,6 @@
 <template>
-  <v-chart
-    :class="classState"
-    :option="chartOptions"
-    :update-options="{ notMerge: false }"
-    autoresize
-    :manual-update="manualUpdate"
-  />
+  <v-chart :class="classState" :option="chartOptions" :update-options="{ notMerge: false }" autoresize
+    :manual-update="manualUpdate" />
 </template>
 
 <script>
@@ -45,7 +40,7 @@ export default {
         label: "LABELDUMMY",
         topic: "TOPICDUMMY",
         unit: "UNITDUMMY",
-        timeout:3000,
+        timeout: 3000,
       }),
     },
   },
@@ -68,8 +63,8 @@ export default {
     },
   },
   mounted() {
+    console.log("SubGraph mounted ", this.config.topic);
     this.sub = new Sub(this.config.topic, this.config.timeout, this.onMessage, this.onTimeout);
-    console.log("SubGraph mounted ", this.config);
     this.chart = this.$children[0].chart;
     this.ts = [];
   },

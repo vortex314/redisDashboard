@@ -9,9 +9,14 @@ import _ from "lodash";
 export default {
   name: "SubTable",
   props: {
-    pattern: {
-      type: String,
-      default: "*",
+    config: {
+      type: Object,
+      default: () => ({
+        label: "LABELDUMMY",
+        topic: "TOPICDUMMY",
+        unit: "UNITDUMMY",
+        timeout: 3000,
+      }),
     },
   },
   data() {
@@ -29,26 +34,21 @@ export default {
     };
   },
   mounted() {
-    this.sub = new Sub(this.pattern, 1000, this.onMessage, this.onTimeout);
+    this.sub = new Sub(this.config.topic, 1000, this.onMessage, this.onTimeout);
     console.log("SubTable  pattern " + this.pattern);
   },
   unmounted() {
-    this.sub.unsubscribe(this.pattern, this.onMessage);
+    this.sub.unsubscribe(this.config.topic, this.onMessage);
     this.chart.dispose();
   },
   watch: {
-    '$props': function (oldVal, newVal) {
-      console.log("SubTable.props changed from " + oldVal + " to " + newVal);
-      console.log("SubTable.watch props");
-
+    config: function (newConfig, oldConfig) {
+      console.log(
+        this.name + "watch topic newVal:" + newConfig + " oldVal:" + oldConfig
+      );
+      this.sub.unsubscribe(oldConfig.topic, this.onMessage);
+      this.sub.subscribe(newConfig.topic, this.onMessage);
     },
-    pattern: function (newVal, oldVal) {
-      this.key = Math.round(Math.random() * 1000)
-      console.log("SubTable.pattern changed from " + oldVal + " to " + newVal);
-      /*   this.sub.unsubscribe(oldVal,this.onMessage);
-         this.kv=[];
-         this.sub.subscribe(newVal,this.onMessage);*/
-    }
   },
   methods: {
     onMessage(topic, message) {

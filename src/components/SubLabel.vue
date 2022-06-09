@@ -1,5 +1,5 @@
 <template>
-  <div :class="classState">{{ label }} : {{ value }} {{ unit }}</div>
+  <div :class="classState">{{ config.label }} : {{ value }} {{ config.unit }}</div>
 </template>
 
 <script>
@@ -8,17 +8,14 @@ import { Sub } from "../Sub.js";
 export default {
   name: "SubLabel",
   props: {
-    label: {
-      type: String,
-      default: "Shaker2",
-    },
-    topic: {
-      type: String,
-      default: "dst/shaker2/shake/trigger",
-    },
-    unit: {
-      type: String,
-      default: "",
+    config: {
+      type: Object,
+      default: () => ({
+        label: "LABELDUMMY",
+        topic: "TOPICDUMMY",
+        unit: "UNITDUMMY",
+        timeout: 3000,
+      }),
     },
   },
   data() {
@@ -32,25 +29,27 @@ export default {
     };
   },
   mounted() {
-    this.sub = new Sub(this.topic, 60000, this.onMessage, this.onTimeout);
-    console.log("SubLabel label:" + this.label + " topic " + this.topic);
+    this.sub = new Sub(this.config.topic, 60000, this.onMessage, this.onTimeout);
+    console.log("SubLabel label:" + this.config.label + " topic " + this.config.topic);
   },
   unmounted() {
-    this.sub.unsubscribe(this.pattern, this.onMessage);
+    this.sub.unsubscribe(this.config.topic, this.onMessage);
     this.chart.dispose();
   },
   watch: {
-    topic: function (newVal, oldVal) {
-      console.log("SubLabel.watch topic:" + newVal + " oldVal:" + oldVal);
-      this.sub.unsubscribe(oldVal, this.onMessage);
-      this.sub.subscribe(newVal, this.onMessage);
+    config: function (newConfig, oldConfig) {
+      console.log(
+        this.name + "watch topic newVal:" + newConfig + " oldVal:" + oldConfig
+      );
+      this.sub.unsubscribe(oldConfig.topic, this.onMessage);
+      this.sub.subscribe(newConfig.topic, this.onMessage);
     },
   },
   methods: {
     onMessage(topic, message) {
       //    console.log("SubLabel.update topic:" + topic + " message:" + message);
       this.count++;
-      this.value = message.toFixed(2);
+      this.value = message;
       this.sub.resetTimer();
       this.classState = "m-0 p-0 text-center alive";
     },

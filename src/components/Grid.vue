@@ -66,6 +66,8 @@ import SubGraph from "./SubGraph.vue";
 import SubTable from "./SubTable.vue";
 import PubSubSwitch from "./PubSubSwitch.vue";
 import ConfigEditor from "./ConfigEditor.vue";
+import PubButton from "./PubButton.vue";
+import SubButton from "./SubButton.vue";
 // import _ from "lodash";
 
 var GridLayout = VueGridLayout.GridLayout;
@@ -97,7 +99,7 @@ export default {
       currentItemConfig: {},
       newConfig: {},
       currentItem: {},
-      widgetList: ["SubTable", "SubGraph", "SubAngle", "SubLabel","PubSubSwitch"],
+      widgetList: ["SubTable", "SubGraph", "SubAngle", "SubLabel","PubSubSwitch","PubButton"],
     };
   },
   props: {},
@@ -112,6 +114,8 @@ export default {
     ConfigEditor,
     EmptyGrid,
     PubSubSwitch,
+        SubButton,
+    PubButton,
   },
   created() {
     Eventbus.$on("Grid.save", this.saveToRedis);

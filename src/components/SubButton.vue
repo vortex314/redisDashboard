@@ -1,9 +1,10 @@
 <template>
-    <v-switch v-model="switch1" class="v-input--reverse" >
-        <template #label>
-            {{label}}
-        </template>
-    </v-switch>
+<v-btn
+  :color="color"
+  depressed
+  elevation="2"
+  rounded
+></v-btn>
 </template>
 
 <script>
@@ -16,9 +17,8 @@ export default {
             type: Object,
             default: () => ({
                 srcTopic: "src/device/object/prop",
-                dstTopic: "dst/device/object/prop",
-                dstValueOn: "true",
-                dstValueOff: "false",
+                srcValueOn:"true",
+                srcValueOff:"false",
                 labelOn: "ON",
                 labelOff: "OFF",
                 timeout: 3000,
@@ -27,12 +27,11 @@ export default {
     },
     data() {
         return {
-            switch1: false,
-            label:this.config.labelOff
+            color: "red",
         };
     },
     watch: {
-        switch1: function (newVal, oldVal) {
+        config: function (newVal, oldVal) {
             console.log(this.config.label, newVal, oldVal);
             var v = newVal ? this.config.dstValueOn : this.config.dstValueOff;
             Redis.request(["publish", this.config.dstTopic, v]).then(function (response) {
@@ -47,11 +46,13 @@ export default {
     },
     methods: {
         onMessage(topic, message) {
-            this.switch1 = message;
-            this.sub.resetTimer();
+            if (message == JSON.parse(this.config.srcValueOn)) {
+                this.color = "green";
+            } else {
+                this.color = "red";
+            }
         },
         onTimeout() {
-            this.switch1 = false;
         },
     }
 

@@ -36,7 +36,8 @@
         <span class="remove" @click="removeItem(item.i)">x</span>
       </grid-item>
     </grid-layout>
-    <v-dialog v-model="showSelection" width="400" >
+    <v-dialog v-model="showSelection" width="400" hight="600px">
+      Select a widget to add to the grid
       <v-select
         :items="widgetList"
         v-model="index"
@@ -45,6 +46,7 @@
       ></v-select>
     </v-dialog>
     <v-dialog v-model="showEditor">
+      Edit widget
       <config-editor
         :config="currentItemConfig"
         :widget-list="widgetList"
@@ -99,7 +101,15 @@ export default {
       currentItemConfig: {},
       newConfig: {},
       currentItem: {},
-      widgetList: ["SubTable", "SubGraph", "SubAngle", "SubLabel","PubSubSwitch","PubButton"],
+      widgetList: [
+        "SubTable",
+        "SubGraph",
+        "SubAngle",
+        "SubLabel",
+        "PubSubSwitch",
+        "PubButton",
+        "SubButton",
+      ],
     };
   },
   props: {},
@@ -114,7 +124,7 @@ export default {
     ConfigEditor,
     EmptyGrid,
     PubSubSwitch,
-        SubButton,
+    SubButton,
     PubButton,
   },
   created() {
@@ -145,7 +155,7 @@ export default {
     addGridItem: function () {
       console.log("addGridItem");
       // Add a new item. It must have a unique key!
-      var newKey = "item-"+Math.round(Math.random()*1000000);
+      var newKey = "item-" + Math.round(Math.random() * 1000000);
       this.layout.push({
         x: (this.layout.length * 2) % (this.colNum || 12),
         y: this.layout.length + (this.colNum || 12), // puts it at the bottom

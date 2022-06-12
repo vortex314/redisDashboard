@@ -5,7 +5,7 @@ export  class Sub {
         this.timeout = timeout;
         this.callback = callback;
         this.timeoutCallback = timeoutCallback;
-        this.timer = Timer.create(this.timeoutCallback, this.timeout);
+        this.timer = new Timer(this.timeout,this.timeoutCallback,true );
         Redis.subscribe(this.pattern, this.callback);
     }
     subscribe(pattern,callback){
@@ -19,5 +19,11 @@ export  class Sub {
     }
     resetTimer() {
         this.timer.reset();
+    }
+    dispose() {
+        console.log("disposing sub");
+        Redis.unsubscribe(this.pattern, this.callback);
+        this.timer.stop();
+        this.timer.dispose();
     }
 }

@@ -1,6 +1,5 @@
 <template>
-<v-container>
-  <v-row >
+<v-card class="d-flex fill-height justify-center outlined align-center">
     <v-btn color="primary" :disabled="RedisState.connected" @click="connect()">
       <v-icon>mdi-lan-connect</v-icon>
     </v-btn>
@@ -26,8 +25,7 @@
         mdi-lock
       </v-icon>
     </v-btn>
-  </v-row>
-  </v-container>
+</v-card>
 </template>
 
 <script>

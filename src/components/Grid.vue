@@ -1,36 +1,11 @@
 <template>
   <div class="ml-0">
-    <grid-layout
-      :layout="layout"
-      :col-num="24"
-      :row-height="15"
-      :is-draggable="isDraggable"
-      :is-resizable="isResizable"
-      :vertical-compact="true"
-      :margin="[0, 0]"
-      :use-css-transforms="true"
-    >
-      <grid-item
-        class="m-0 p-0"
-        v-for="item in layout"
-        :key="item.i"
-        :x="item.x"
-        :y="item.y"
-        :w="item.w"
-        :h="item.h"
-        :i="item.i"
-        @resize="resizeEvent"
-        @move="moveEvent"
-        @resized="resizedEvent"
-        @moved="movedEvent"
-      >
-        <component
-          style="{'backgroundColor':'#FC0'}"
-          :is="item.type"
-          v-bind="item.config"
-          :ref="item.i"
-          @contextmenu.native="rightClickHandler($event, item)"
-        >
+    <grid-layout :layout="layout" :col-num="24" :row-height="15" :is-draggable="isDraggable" :is-resizable="isResizable"
+      :vertical-compact="true" :margin="[0, 0]" :use-css-transforms="true">
+      <grid-item class="m-0 p-0" v-for="item in layout" :key="item.i" :x="item.x" :y="item.y" :w="item.w" :h="item.h"
+        :i="item.i" @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent" :style="{'border': border}">
+        <component style="{'backgroundColor':'#FC0'}" :is="item.type" v-bind="item.config" :ref="item.i"
+          @contextmenu.native="rightClickHandler($event, item)"  >
         </component>
 
         <span v-if="isRemovable" class="remove" @click="removeItem(item.i)">x</span>
@@ -38,21 +13,12 @@
     </grid-layout>
     <v-dialog v-model="showSelection" width="400" hight="600px">
       Select a widget to add to the grid
-      <v-select
-        :items="widgetList"
-        v-model="index"
-        label="Widget"
-        @change="onSelect"
-      ></v-select>
+      <v-select :items="widgetList" v-model="index" label="Widget" @change="onSelect"></v-select>
     </v-dialog>
     <v-dialog v-model="showEditor">
       Edit widget
-      <config-editor
-        :config="currentItemConfig"
-        :widget-list="widgetList"
-        @configSave="configSave"
-        @configCancel="configCancel"
-      ></config-editor>
+      <config-editor :config="currentItemConfig" :widget-list="widgetList" @configSave="configSave"
+        @configCancel="configCancel"></config-editor>
     </v-dialog>
   </div>
 </template>
@@ -94,11 +60,12 @@ export default {
       colorPrimary: "success",
       showEditor: false,
       showSelection: false,
-      isDraggable:true,
-      isResizable:true,
-      isDeletable:true,
-      isRemovable:true,
-      isConfigurable:true,
+      isDraggable: true,
+      isResizable: true,
+      isDeletable: true,
+      isRemovable: true,
+      isConfigurable: true,
+      border : "1px solid black",
       timer: {},
       count: 0,
       layout: testLayout,
@@ -180,7 +147,7 @@ export default {
     rightClickHandler(event, item) {
       console.log(event, item);
       this.currentItem = item;
-      if ( !this.isConfigurable ) return;
+      if (!this.isConfigurable) return;
 
       if (item.type == "EmptyGrid") {
         this.showSelection = true;
@@ -228,17 +195,19 @@ export default {
     },
     freezeGrid() {
       console.log("Freeze Grid");
-      this.isDraggable=false;
-      this.isResizable=false;
-      this.isRemovable=false;
-      this.isConfigurable=false;
+      this.isDraggable = false;
+      this.isResizable = false;
+      this.isRemovable = false;
+      this.isConfigurable = false;
+      this.border="none";
     },
     unfreezeGrid() {
       console.log("Unfreeze Grid");
-      this.isDraggable=true;
-      this.isResizable=true;
-      this.isRemovable=true;
-      this.isConfigurable=true;
+      this.isDraggable = true;
+      this.isResizable = true;
+      this.isRemovable = true;
+      this.isConfigurable = true;
+      this.border="1px solid black";
     },
   },
 };
@@ -262,7 +231,7 @@ export default {
 
 .vue-grid-item:not(.vue-grid-placeholder) {
   background: #fff;
-  border: 1px solid black;
+  border: 3px solid yellow;
 }
 
 .vue-grid-item.resizing {

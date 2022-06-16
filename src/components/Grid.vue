@@ -4,10 +4,10 @@
       :layout="layout"
       :col-num="24"
       :row-height="15"
-      :is-draggable="true"
-      :is-resizable="true"
+      :is-draggable="isDraggable"
+      :is-resizable="isResizable"
       :vertical-compact="true"
-      :margin="[1, 1]"
+      :margin="[0, 0]"
       :use-css-transforms="true"
     >
       <grid-item
@@ -33,7 +33,7 @@
         >
         </component>
 
-        <span class="remove" @click="removeItem(item.i)">x</span>
+        <span v-if="isRemovable" class="remove" @click="removeItem(item.i)">x</span>
       </grid-item>
     </grid-layout>
     <v-dialog v-model="showSelection" width="400" hight="600px">
@@ -94,6 +94,11 @@ export default {
       colorPrimary: "success",
       showEditor: false,
       showSelection: false,
+      isDraggable:true,
+      isResizable:true,
+      isDeletable:true,
+      isRemovable:true,
+      isConfigurable:true,
       timer: {},
       count: 0,
       layout: testLayout,
@@ -175,6 +180,7 @@ export default {
     rightClickHandler(event, item) {
       console.log(event, item);
       this.currentItem = item;
+      if ( !this.isConfigurable ) return;
 
       if (item.type == "EmptyGrid") {
         this.showSelection = true;
@@ -222,15 +228,17 @@ export default {
     },
     freezeGrid() {
       console.log("Freeze Grid");
-      for (let item of this.layout) {
-        item.locked = true;
-      }
+      this.isDraggable=false;
+      this.isResizable=false;
+      this.isRemovable=false;
+      this.isConfigurable=false;
     },
     unfreezeGrid() {
       console.log("Unfreeze Grid");
-      for (let item of this.layout) {
-        item.locked = false;
-      }
+      this.isDraggable=true;
+      this.isResizable=true;
+      this.isRemovable=true;
+      this.isConfigurable=true;
     },
   },
 };

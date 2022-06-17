@@ -1,9 +1,11 @@
 <template>
-  <div :class="classState">{{ config.label }} : {{ value }} {{ config.unit }}</div>
+  <div :key="key" :class="classState">{{ config.label }} : {{ value }} {{ config.unit }}</div>
 </template>
 
 <script>
-import { Redis, Eventbus, Timer } from "../Redis.js";
+/*jshint esversion: 6 */
+
+import { Redis, Eventbus, Timer,newKey  } from "../Redis.js";
 import { Sub } from "../Sub.js";
 export default {
   name: "SubLabel",
@@ -20,6 +22,7 @@ export default {
   },
   data() {
     return {
+      key:newKey(),
       count: 0,
       value: 0,
       classState: "m-0 p-0 text-center dead",
@@ -41,6 +44,7 @@ export default {
       console.log(
         this.name + "watch topic newVal:" + newConfig + " oldVal:" + oldConfig
       );
+      this.key = newKey();
       this.sub.unsubscribe(oldConfig.topic, this.onMessage);
       this.sub.subscribe(newConfig.topic, this.onMessage);
     },

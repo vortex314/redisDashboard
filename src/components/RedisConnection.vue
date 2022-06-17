@@ -1,5 +1,5 @@
 <template>
-<v-card class="d-flex fill-height justify-center outlined align-center">
+  <v-card class="d-flex fill-height justify-center outlined align-center">
     <v-btn color="primary" :disabled="RedisState.connected" @click="connect()">
       <v-icon>mdi-lan-connect</v-icon>
     </v-btn>
@@ -25,11 +25,13 @@
         mdi-lock
       </v-icon>
     </v-btn>
-</v-card>
+    <v-spacer></v-spacer>
+    Dashboard <v-text-field v-model="dashboardName" ></v-text-field>
+  </v-card>
 </template>
 
 <script>
-import { Redis, Eventbus ,RedisState} from "../Redis.js";
+import { Redis, Eventbus, RedisState } from "../Redis.js";
 export default {
   name: "RedisConnection",
   props: {
@@ -49,6 +51,7 @@ export default {
   data() {
     return {
       count: 0,
+      dashboardName:"dashboard:default",
       RedisState
     };
   },
@@ -79,8 +82,8 @@ export default {
       Eventbus.$emit('Grid.unfreeze');
     },
   },
-  watch:{
-    
+  watch: {
+
   }
 };
 </script>

@@ -77,7 +77,8 @@ export default {
       this.value = value.toFixed(2);
       this.sub.resetTimer();
       this.classState = "m-0 p-0 alive";
-      this.ts.push({ name: "serie11", value: [new Date(), this.value] });
+      console.log(topic, value);
+      this.ts.push({ name: topic, value: [new Date(), this.value] });
       if (this.ts.length > 100) {
         this.ts.shift();
       }

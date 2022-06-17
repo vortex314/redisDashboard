@@ -1,5 +1,5 @@
-import Vue from 'vue';
 /*jshint esversion: 6 */
+import Vue from 'vue';
 
 export const RedisState = new Vue({
     name: "RedisState",
@@ -95,9 +95,9 @@ class RedisClass {
 
             default: {
                 console.log("Redis reply", arr);
-                let rp = this.promises.dequeue()
+                let rp = this.promises.dequeue();
                 if (rp.cmd.toLowerCase() != cmd.toLowerCase()) {
-                    console.log("ERROR: ", rp.cmd, cmd)
+                    console.log("ERROR: ", rp.cmd, cmd);
                     rp.reject("Redis reply error " + rp.cmd + " != " + cmd);
                 } else {
                     rp.resolve(arr);
@@ -110,7 +110,7 @@ class RedisClass {
         this.subscriptions.push({ pattern: pattern, callback: action });
         if (this.connected) {
             this.request(["PSUBSCRIBE", pattern]).then((x) => {
-                console.log("PSUBSCRIBE response", x)
+                console.log("PSUBSCRIBE response", x);
             }).catch(console.log);
         }
     }
@@ -120,7 +120,7 @@ class RedisClass {
         });
         if (this.connected) {
             this.request(["PUNSUBSCRIBE", pattern]).then((x) => {
-                console.log("PUNSUBSCRIBE response", x)
+                console.log("PUNSUBSCRIBE response", x);
             }).catch(console.log);
         }
     }
@@ -168,21 +168,21 @@ export const Eventbus = new Vue()
 
 class TimerSingletonClass {
     constructor() {
-        this.tick = 1000
-        this.timers = []
-        setInterval(() => { this.nextTick() }, 1000);
+        this.tick = 1000;
+        this.timers = [];
+        setInterval(() => { this.nextTick(); }, 1000);
     }
     nextTick() {    
         this.timers.forEach(timer => {
             if (timer.expired()) {
-                timer.run()
-                if ( timer.isContinuous ) timer.reset()
-                else timer.stop()
+                timer.run();
+                if ( timer.isContinuous ) {timer.reset() ;}
+                else { timer.stop();}
             }
-        })
+        });
     }
     add(timer) {
-        this.timers.push(timer)
+        this.timers.push(timer);
     }
 }
 
@@ -190,12 +190,12 @@ export const MainClock = new TimerSingletonClass()
 
 export class Timer {
     constructor(timeout,callback,isContinuous) {
-        this.timeout = timeout
-        this.callback = callback
-        this.isContinuous = isContinuous
-        this.expiresAt = new Date().getTime() + timeout
-        this.isRunning = true
-        MainClock.add(this)
+        this.timeout = timeout;
+        this.callback = callback;
+        this.isContinuous = isContinuous;
+        this.expiresAt = new Date().getTime() + timeout;
+        this.isRunning = true;
+        MainClock.add(this);
     }
 
     expired() {
@@ -204,25 +204,29 @@ export class Timer {
     run() {
         this.callback()
         if (this.isContinuous) {
-            this.expiresAt = new Date().getTime() + this.timeout
+            this.expiresAt = new Date().getTime() + this.timeout;
         } else {
-            this.isRunning = false
+            this.isRunning = false;
         }
     }
     stop() {
-        this.isRunning = false
+        this.isRunning = false;
     }
     start() {
         this.isRunning = true
-        this.expiresAt = new Date().getTime() + this.timeout
+        this.expiresAt = new Date().getTime() + this.timeout;
     }
     reset() {
-        this.expiresAt = new Date().getTime() + this.timeout
+        this.expiresAt = new Date().getTime() + this.timeout;
     }
     dispose() {
-        MainClock.timers.splice(MainClock.timers.indexOf(this), 1)
-        delete this
+        MainClock.timers.splice(MainClock.timers.indexOf(this), 1);
+        delete this;
     }
+}
+
+export function newKey() {
+   return Math.round(Math.random()*1000000000).toString();
 }
 
 

@@ -1,24 +1,61 @@
 <template>
   <div class="ml-0">
-    <grid-layout :layout="layout" :col-num="24" :row-height="15" :is-draggable="isDraggable" :is-resizable="isResizable"
-      :vertical-compact="true" :margin="[0, 0]" :use-css-transforms="true">
-      <grid-item class="m-0 p-0" v-for="item in layout" :key="item.i" :x="item.x" :y="item.y" :w="item.w" :h="item.h"
-        :i="item.i" @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent" :style="{'border': border}">
-        <component style="{'backgroundColor':'#FC0'}" :is="item.type" v-bind="item.config" :ref="item.i"
-          @contextmenu.native="rightClickHandler($event, item)"  >
+    <grid-layout
+      :layout="layout"
+      :col-num="24"
+      :row-height="15"
+      :is-draggable="isDraggable"
+      :is-resizable="isResizable"
+      :vertical-compact="true"
+      :margin="[0, 0]"
+      :use-css-transforms="true"
+    >
+      <grid-item
+        class="m-0 p-0"
+        v-for="item in layout"
+        :key="item.i"
+        :x="item.x"
+        :y="item.y"
+        :w="item.w"
+        :h="item.h"
+        :i="item.i"
+        @resize="resizeEvent"
+        @move="moveEvent"
+        @resized="resizedEvent"
+        @moved="movedEvent"
+        :style="{ border: border }"
+      >
+        <component
+          style="{'backgroundColor':'#FC0'}"
+          :is="item.type"
+          v-bind="item.config"
+          :ref="item.i"
+          @contextmenu.native="rightClickHandler($event, item)"
+        >
         </component>
 
-        <span v-if="isRemovable" class="remove" @click="removeItem(item.i)">x</span>
+        <span v-if="isRemovable" class="remove" @click="removeItem(item.i)"
+          >x</span
+        >
       </grid-item>
     </grid-layout>
     <v-dialog v-model="showSelection" width="400" hight="600px">
       Select a widget to add to the grid
-      <v-select :items="widgetList" v-model="index" label="Widget" @change="onSelect"></v-select>
+      <v-select
+        :items="widgetList"
+        v-model="index"
+        label="Widget"
+        @change="onSelect"
+      ></v-select>
     </v-dialog>
     <v-dialog v-model="showEditor">
       Edit widget
-      <config-editor :config="currentItemConfig" :widget-list="widgetList" @configSave="configSave"
-        @configCancel="configCancel"></config-editor>
+      <config-editor
+        :config="currentItemConfig"
+        :widget-list="widgetList"
+        @configSave="configSave"
+        @configCancel="configCancel"
+      ></config-editor>
     </v-dialog>
   </div>
 </template>
@@ -44,11 +81,11 @@ var testLayout = [
   {
     x: 0,
     y: 0,
-    w: 11,
+    w: 20,
     h: 3,
     i: "item-0",
     type: "RedisConnection",
-    config: { host: "limero.ddns.net", port: 9001, path: "/redis" },
+    config: { host: "pcdell.local", port: 9000, path: "/redis" },
     moved: false,
   },
 ];
@@ -65,7 +102,7 @@ export default {
       isDeletable: true,
       isRemovable: true,
       isConfigurable: true,
-      border : "1px solid black",
+      border: "1px solid black",
       timer: {},
       count: 0,
       layout: testLayout,
@@ -180,15 +217,19 @@ export default {
       console.log("configCancel");
       this.showEditor = false;
     },
-    saveToRedis() {
+    saveToRedis(dashboardName) {
       var serialized = JSON.stringify(this.layout);
       console.log(serialized);
-      Redis.request(["set", "dashboard", serialized]).then((x) => {
-        console.log("Saved to Redis", x);
-      });
+      Redis.request(["set", "dashboard:" + dashboardName, serialized]).then(
+        (x) => {
+          console.log("Saved to Redis", x);
+        }
+      );
     },
-    loadFromRedis() {
-      Redis.request(["get", "dashboard"]).then((data) => {
+    loadFromRedis(dashboardName) {
+      Redis.request(["get", "dashboard:" + dashboardName]).then((data) => {
+        console.log("Loaded from Redis", data);
+        console.log("Parsed from Redis", JSON.parse(data[1]));
         this.layout = JSON.parse(data[1]);
         console.log("Grid load", this.layout);
       });
@@ -199,7 +240,7 @@ export default {
       this.isResizable = false;
       this.isRemovable = false;
       this.isConfigurable = false;
-      this.border="none";
+      this.border = "none";
     },
     unfreezeGrid() {
       console.log("Unfreeze Grid");
@@ -207,7 +248,7 @@ export default {
       this.isResizable = true;
       this.isRemovable = true;
       this.isConfigurable = true;
-      this.border="1px solid black";
+      this.border = "1px solid black";
     },
   },
 };

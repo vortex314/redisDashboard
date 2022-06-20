@@ -53,15 +53,25 @@ class RedisClass {
     webSocketUrl() {
         return "ws://" + this.host + ":" + this.port + this.socketPath;
     }
+    isStringArray(arr) {
+        return arr instanceof Array && arr.every(x => typeof x == "string");
+    }
     request(rq) {
-        let rp = { cmd: rq[0] }
+
+
         let promise = new Promise((resolve, reject) => {
-            if (!this.connected) reject("Redis not connected");
-            rp.reject = reject;
-            rp.resolve = resolve;
-            this.command(rq);
+            if (!this.isStringArray(rq)) {
+                reject("Redis request error: " + rq + " is not an array");
+            }
+            else if (!this.connected) {
+                reject("Redis not connected");
+            } else {
+                let rp = { cmd: rq[0], resolve: resolve, reject: reject };
+                this.command(rq);
+                this.promises.enqueue(rp);
+                console.log("Redis request queued for answer: ", rq);
+            }
         })
-        this.promises.enqueue(rp);
         return promise;
     }
     onConnected() {
@@ -69,17 +79,19 @@ class RedisClass {
         this.connected = true;
         RedisState.connected = true;
         this.request(["hello", "3"]).then(() => {
-           //  console.log("hello response", x)
+            //  console.log("hello response", x)
         }).catch(console.log);
         this.subscriptions.forEach(subscription => {
             this.request(["PSUBSCRIBE", subscription.pattern]).then(() => {
-               //  console.log("Redis response", x)
+                //  console.log("Redis response", x)
             }).catch(console.log);
         });
+        Eventbus.$emit("Redis.connected", true);
     }
     onDisconnected() {
         console.log("Redis disconnected");
         RedisState.connected = false;
+        Eventbus.$emit("Redis.connected", false);
     }
     onMessage(message) {
         var arr = JSON.parse(message.data);
@@ -96,10 +108,12 @@ class RedisClass {
             default: {
                 console.log("Redis reply", arr);
                 let rp = this.promises.dequeue();
+                console.log("dequeued ", rp.cmd);
                 if (rp.cmd.toLowerCase() != cmd.toLowerCase()) {
                     console.log("ERROR: ", rp.cmd, cmd);
                     rp.reject("Redis reply error " + rp.cmd + " != " + cmd);
                 } else {
+                    console.log("arg_1", arr);
                     rp.resolve(arr);
                 }
                 break;
@@ -135,6 +149,10 @@ class RedisClass {
         console.log(error);
     }
     command(arr) {
+        if (!this.isStringArray(arr)) {
+            alert("Redis request error: " + arr + " is not an array");
+            return;
+        }
         if (!this.connected) {
             alert("Redis not connected");
             return
@@ -162,7 +180,7 @@ class RedisClass {
 
 }
 
-export const Redis = new RedisClass("limero.ddns.net", 9000, "/redis");
+export const Redis = new RedisClass("pcdell.local", 9000, "/redis");
 
 export const Eventbus = new Vue()
 
@@ -172,12 +190,12 @@ class TimerSingletonClass {
         this.timers = [];
         setInterval(() => { this.nextTick(); }, 1000);
     }
-    nextTick() {    
+    nextTick() {
         this.timers.forEach(timer => {
             if (timer.expired()) {
                 timer.run();
-                if ( timer.isContinuous ) {timer.reset() ;}
-                else { timer.stop();}
+                if (timer.isContinuous) { timer.reset(); }
+                else { timer.stop(); }
             }
         });
     }
@@ -189,7 +207,7 @@ class TimerSingletonClass {
 export const MainClock = new TimerSingletonClass()
 
 export class Timer {
-    constructor(timeout,callback,isContinuous) {
+    constructor(timeout, callback, isContinuous) {
         this.timeout = timeout;
         this.callback = callback;
         this.isContinuous = isContinuous;
@@ -226,7 +244,7 @@ export class Timer {
 }
 
 export function newKey() {
-   return Math.round(Math.random()*1000000000).toString();
+    return Math.round(Math.random() * 1000000000).toString();
 }
 
 

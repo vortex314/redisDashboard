@@ -37,11 +37,11 @@ export default {
   props: {
     host: {
       type: String,
-      default: "limero.ddns.net",
+      default: "host",
     },
     port: {
       type: Number,
-      default: 9001,
+      default: 666,
     },
     path: {
       type: String,
@@ -51,15 +51,37 @@ export default {
   data() {
     return {
       count: 0,
-      dashboardName:"dashboard:default",
+      dashboardName:"default",
+      dashboardNames: ["default"],
       RedisState
     };
   },
   mounted() {
     console.log("RedisConnection host:" + this.host + " port " + this.port);
     console.log(JSON.stringify(this.$props))
+    Eventbus.$on("Redis.connected", (connected) => {
+      if ( connected ) {
+        this.loadDashboards();
+      }
+    });
+    
   },
   methods: {
+    loadDashboards(){
+      Redis.request(["keys", "dashboard:*"], (data) => {
+        console.log("dashboard names:" + JSON.stringify(data));
+        var dashboards = JSON.parse(data[1]);
+        if ( dashboards.isArray ) {
+          dashboards.array.forEach(element => {
+            if ( typeof element === "string" ) {
+              this.dashboardNames.push(element.replace("dashboard:", ""));
+            }
+          });
+        } else {
+          this.dashboardNames.push(dashboards.string.replace("dashboard:", ""));
+        }
+      });
+    },
     connect() {
       Redis.connect(this.host, this.port, this.path);
     },
@@ -67,10 +89,10 @@ export default {
       Redis.disconnect();
     },
     gridSave() {
-      Eventbus.$emit('Grid.save');
+      Eventbus.$emit('Grid.save',this.dashboardName);
     },
     gridLoad() {
-      Eventbus.$emit('Grid.load');
+      Eventbus.$emit('Grid.load',this.dashboardName);
     },
     gridAdd() {
       Eventbus.$emit('Grid.add');

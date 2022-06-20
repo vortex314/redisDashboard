@@ -1,10 +1,6 @@
 <template>
   <v-card class="d-flex fill-height justify-center outlined align-center">
-    <v-btn
-      class="d-flex fill-height justify-center outlined align-center"
-      @click="buttonClicked"
-      >{{ config.label }}</v-btn
-    >
+    <v-btn @click="buttonClicked">{{ config.label }}</v-btn>
   </v-card>
 </template>
 

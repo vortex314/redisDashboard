@@ -73,6 +73,7 @@ import PubSubSwitch from "./PubSubSwitch.vue";
 import ConfigEditor from "./ConfigEditor.vue";
 import PubButton from "./PubButton.vue";
 import SubButton from "./SubButton.vue";
+import TimeSeriesGraph from "./TimeSeriesGraph.vue";
 // import _ from "lodash";
 
 var GridLayout = VueGridLayout.GridLayout;
@@ -118,6 +119,7 @@ export default {
         "PubSubSwitch",
         "PubButton",
         "SubButton",
+        "TimeSeriesGraph"
       ],
     };
   },
@@ -135,6 +137,7 @@ export default {
     PubSubSwitch,
     SubButton,
     PubButton,
+    TimeSeriesGraph,
   },
   created() {
     Eventbus.$on("Grid.save", this.saveToRedis);

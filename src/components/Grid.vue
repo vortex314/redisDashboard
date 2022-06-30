@@ -1,61 +1,25 @@
 <template>
   <div class="ml-0">
-    <grid-layout
-      :layout="layout"
-      :col-num="24"
-      :row-height="15"
-      :is-draggable="isDraggable"
-      :is-resizable="isResizable"
-      :vertical-compact="true"
-      :margin="[0, 0]"
-      :use-css-transforms="true"
-    >
-      <grid-item
-        class="m-0 p-0"
-        v-for="item in layout"
-        :key="item.i"
-        :x="item.x"
-        :y="item.y"
-        :w="item.w"
-        :h="item.h"
-        :i="item.i"
-        @resize="resizeEvent"
-        @move="moveEvent"
-        @resized="resizedEvent"
-        @moved="movedEvent"
-        :style="{ border: border }"
-      >
-        <component
-          style="{'backgroundColor':'#FC0'}"
-          :is="item.type"
-          v-bind="item.config"
-          :ref="item.i"
-          @contextmenu.native="rightClickHandler($event, item)"
-        >
+    <grid-layout :layout="layout" :col-num="24" :row-height="15" :is-draggable="isDraggable" :is-resizable="isResizable"
+      :vertical-compact="true" :margin="[0, 0]" :use-css-transforms="true">
+      <grid-item class="m-0 p-0" v-for="item in layout" :key="item.i" :x="item.x" :y="item.y" :w="item.w" :h="item.h"
+        :i="item.i" @resize="resizeEvent" @move="moveEvent" @resized="resizedEvent" @moved="movedEvent"
+        :style="{ border: border }">
+        <component style="{'backgroundColor':'#FC0'}" :is="item.type" v-bind="item.config" :ref="item.i"
+          @contextmenu.native="rightClickHandler($event, item)">
         </component>
 
-        <span v-if="isRemovable" class="remove" @click="removeItem(item.i)"
-          >x</span
-        >
+        <span v-if="isRemovable" class="remove" @click="removeItem(item.i)">x</span>
       </grid-item>
     </grid-layout>
     <v-dialog v-model="showSelection" width="400" hight="600px">
       Select a widget to add to the grid
-      <v-select
-        :items="widgetList"
-        v-model="index"
-        label="Widget"
-        @change="onSelect"
-      ></v-select>
+      <v-select :items="widgetList" v-model="index" label="Widget" @change="onSelect"></v-select>
     </v-dialog>
     <v-dialog v-model="showEditor">
       Edit widget
-      <config-editor
-        :config="currentItemConfig"
-        :widget-list="widgetList"
-        @configSave="configSave"
-        @configCancel="configCancel"
-      ></config-editor>
+      <config-editor :config="currentItemConfig" :widget-list="widgetList" @configSave="configSave"
+        @configCancel="configCancel"></config-editor>
     </v-dialog>
   </div>
 </template>
@@ -75,6 +39,7 @@ import PubButton from "./PubButton.vue";
 import SubButton from "./SubButton.vue";
 import TimeSeriesGraph from "./TimeSeriesGraph.vue";
 import PubSlider from "./PubSlider.vue";
+import SubIframe from "./SubIframe.vue";
 // import _ from "lodash";
 
 var GridLayout = VueGridLayout.GridLayout;
@@ -113,14 +78,15 @@ export default {
       newConfig: {},
       currentItem: {},
       widgetList: [
-        "SubTable",
-        "SubGraph",
         "SubAngle",
+        "SubButton",
+        "SubGraph",
+        "SubIframe",
         "SubLabel",
+        "SubTable",
         "PubSubSwitch",
         "PubButton",
         "PubSlider",
-        "SubButton",
         "TimeSeriesGraph"
       ],
     };
@@ -140,6 +106,7 @@ export default {
     PubSubSwitch,
     PubSlider,
     SubButton,
+    SubIframe,
     TimeSeriesGraph,
   },
   created() {

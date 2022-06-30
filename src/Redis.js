@@ -74,6 +74,9 @@ class RedisClass {
         })
         return promise;
     }
+    publish(channel, message) {
+        this.request(["PUBLISH", channel, JSON.stringify(message)]).catch(console.log);
+    }
     onConnected() {
         console.log("Redis connected");
         this.connected = true;
@@ -180,7 +183,7 @@ class RedisClass {
 
 }
 
-export const Redis = new RedisClass("pcdell.local", 9000, "/redis");
+export const Redis = new RedisClass("limero.ddns.net", 9000, "/redis");
 
 export const Eventbus = new Vue()
 

@@ -74,6 +74,7 @@ import ConfigEditor from "./ConfigEditor.vue";
 import PubButton from "./PubButton.vue";
 import SubButton from "./SubButton.vue";
 import TimeSeriesGraph from "./TimeSeriesGraph.vue";
+import PubSlider from "./PubSlider.vue";
 // import _ from "lodash";
 
 var GridLayout = VueGridLayout.GridLayout;
@@ -118,6 +119,7 @@ export default {
         "SubLabel",
         "PubSubSwitch",
         "PubButton",
+        "PubSlider",
         "SubButton",
         "TimeSeriesGraph"
       ],
@@ -134,9 +136,10 @@ export default {
     SubTable,
     ConfigEditor,
     EmptyGrid,
-    PubSubSwitch,
-    SubButton,
     PubButton,
+    PubSubSwitch,
+    PubSlider,
+    SubButton,
     TimeSeriesGraph,
   },
   created() {

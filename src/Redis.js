@@ -15,6 +15,7 @@ class Queue {
         this.elements = {};
         this.head = 0;
         this.tail = 0;
+        this.timer = null;
     }
     enqueue(element) {
         this.elements[this.tail] = element;
@@ -90,6 +91,16 @@ class RedisClass {
             }).catch(console.log);
         });
         Eventbus.$emit("Redis.connected", true);
+        this.timer = setInterval(() => {
+            Redis.request(
+                ["publish", "src/hover/motor/targetAngle", Math.round((Math.random() * 180) - 90).toString()]);
+            Redis.request(
+                ["publish", "src/hover/motor/measuredAngle", Math.round((Math.random() * 180) - 90).toString()]);
+            Redis.request(
+                ["publish", "src/hover/motor/currentLeft", Math.round((Math.random() * 5) ).toString()]);
+            Redis.request(
+                ["publish", "src/hover/motor/currentRight", Math.round((Math.random() * 5) ).toString()]);
+        }, 2000);
     }
     onDisconnected() {
         console.log("Redis disconnected");
@@ -105,18 +116,16 @@ class RedisClass {
                     if (subscription.pattern == arr[1]) {
                         subscription.callback(arr[2], JSON.parse(arr[3]));
                     }
-                })
+                });
                 break;
 
             default: {
                 console.log("Redis reply", arr);
                 let rp = this.promises.dequeue();
-                console.log("dequeued ", rp.cmd);
                 if (rp.cmd.toLowerCase() != cmd.toLowerCase()) {
                     console.log("ERROR: ", rp.cmd, cmd);
                     rp.reject("Redis reply error " + rp.cmd + " != " + cmd);
                 } else {
-                    console.log("arg_1", arr);
                     rp.resolve(arr);
                 }
                 break;
@@ -160,7 +169,7 @@ class RedisClass {
             alert("Redis not connected");
             return
         }
-        console.log("Redis request: ", arr);
+        //console.log("Redis request: ", arr);
         this.ws.send(JSON.stringify(arr));
     }
 

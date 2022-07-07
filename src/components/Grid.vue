@@ -40,6 +40,7 @@ import SubButton from "./SubButton.vue";
 import TimeSeriesGraph from "./TimeSeriesGraph.vue";
 import PubSlider from "./PubSlider.vue";
 import SubIframe from "./SubIframe.vue";
+import SubGauge from "./SubGauge.vue";
 // import _ from "lodash";
 
 var GridLayout = VueGridLayout.GridLayout;
@@ -81,6 +82,7 @@ export default {
         "SubAngle",
         "SubButton",
         "SubGraph",
+        "SubGauge",
         "SubIframe",
         "SubLabel",
         "SubTable",
@@ -99,6 +101,7 @@ export default {
     SubLabel,
     SubAngle,
     SubGraph,
+    SubGauge,
     SubTable,
     ConfigEditor,
     EmptyGrid,

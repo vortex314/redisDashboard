@@ -49,6 +49,8 @@ export default {
       value: 0,
       classState: "m-0 p-0 dead",
       manualUpdate: true,
+      returnedTopics: [],
+      arrayOfTs: [],
     };
   },
   watch: {
@@ -60,6 +62,7 @@ export default {
       this.sub.subscribe(newConfig.topic, this.onMessage);
       this.chart.setOption(this.chartOptions);
       this.ts = [];
+      this.arrayOfTs = [];
     },
   },
   mounted() {
@@ -74,15 +77,42 @@ export default {
   },
   methods: {
     onMessage(topic, value) {
+      if ( !this.returnedTopics.includes(topic) ) { // only add new topics
+        console.log(" topic not found yet. ", topic )
+        this.returnedTopics.push(topic);
+        let idx = this.returnedTopics.indexOf(topic);
+        this.arrayOfTs[idx] = [];
+        let series=[];
+        this.returnedTopics.forEach(t => {
+          series.push({
+            name: t,
+            animation: false,
+            type: "line",
+            data: this.arrayOfTs[idx],
+            dimensions: [
+              { name: "timestamp", type: "time" },
+              { name: "sensor1", type: "float" },
+            ],
+          });
+        });
+        this.chart.setOption({ series: series}, false, true);
+      }
+            let idx = this.returnedTopics.indexOf(topic);
+
       this.value = value.toFixed(2);
       this.sub.resetTimer();
       this.classState = "m-0 p-0 alive";
-      console.log(topic, value);
-      this.ts.push({ name: topic, value: [new Date(), this.value] });
-      if (this.ts.length > 100) {
-        this.ts.shift();
+      this.arrayOfTs[idx].push({ name: topic, value: [new Date(), this.value] });
+      if (this.arrayOfTs[idx].length > 100) {
+        this.arrayOfTs[idx].shift();
       }
-      this.chart.setOption({ series: [{ data: this.ts }] }, false, true);
+
+      let datas = [];
+      for(let i=0; i<this.arrayOfTs.length; i++) {
+        datas.push({data:this.arrayOfTs[i]});
+      }
+      // updata values only for the current topic
+      this.chart.setOption({ series: datas }, false, true);
     },
     onTimeout() {
       this.classState = "m-0 p-0 dead";
@@ -112,16 +142,6 @@ export default {
         },
         yAxis: { type: "value" },
         series: [
-          {
-            name: this.config.label,
-            animation: false,
-            type: "line",
-            data: this.ts,
-            dimensions: [
-              { name: "timestamp", type: "time" },
-              { name: "sensor1", type: "float" },
-            ],
-          },
         ],
       };
     },

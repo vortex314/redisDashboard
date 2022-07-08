@@ -34,9 +34,9 @@ export default {
     config: {
       type: Object,
       default: () => ({
-        label: "LABELDUMMY",
-        topic: "TOPICDUMMY",
-        unit: "UNITDUMMY",
+        label: "LABEL",
+        topic: "TOPIC",
+        unit: "UNIT",
         min:0,
         max:100,
         steps:10,
@@ -127,7 +127,7 @@ export default {
               show: true,
             },
             detail: {
-              valueAnimation: true,
+              valueAnimation: false,
               fontSize: 40,
                offsetCenter: [0, '50%'],
               formatter: "{value}"+this.config.unit,

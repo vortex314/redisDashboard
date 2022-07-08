@@ -97,10 +97,10 @@ class RedisClass {
             Redis.request(
                 ["publish", "src/hover/motor/measuredAngle", Math.round((Math.random() * 180) - 90).toString()]);
             Redis.request(
-                ["publish", "src/hover/motor/currentLeft", Math.round((Math.random() * 5) ).toString()]);
+                ["publish", "src/hover/motor/currentLeft", Math.round((Math.random() * 50) ).toString()]);
             Redis.request(
-                ["publish", "src/hover/motor/currentRight", Math.round((Math.random() * 5) ).toString()]);
-        }, 2000);
+                ["publish", "src/hover/motor/currentRight", Math.round((Math.random() * 50) ).toString()]);
+        }, 100);
     }
     onDisconnected() {
         console.log("Redis disconnected");

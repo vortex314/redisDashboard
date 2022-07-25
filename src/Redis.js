@@ -91,16 +91,16 @@ class RedisClass {
             }).catch(console.log);
         });
         Eventbus.$emit("Redis.connected", true);
-        this.timer = setInterval(() => {
-            Redis.request(
-                ["publish", "src/hover/motor/targetAngle", Math.round((Math.random() * 180) - 90).toString()]);
-            Redis.request(
-                ["publish", "src/hover/motor/measuredAngle", Math.round((Math.random() * 180) - 90).toString()]);
-            Redis.request(
-                ["publish", "src/hover/motor/currentLeft", Math.round((Math.random() * 50) ).toString()]);
-            Redis.request(
-                ["publish", "src/hover/motor/currentRight", Math.round((Math.random() * 50) ).toString()]);
-        }, 100);
+        /* this.timer = setInterval(() => {
+             Redis.request(
+                 ["publish", "src/hover/motor/targetAngle", Math.round((Math.random() * 180) - 90).toString()]);
+             Redis.request(
+                 ["publish", "src/hover/motor/measuredAngle", Math.round((Math.random() * 180) - 90).toString()]);
+             Redis.request(
+                 ["publish", "src/hover/motor/currentLeft", Math.round((Math.random() * 50) ).toString()]);
+             Redis.request(
+                 ["publish", "src/hover/motor/currentRight", Math.round((Math.random() * 50) ).toString()]);
+         }, 100);*/
     }
     onDisconnected() {
         console.log("Redis disconnected");
@@ -108,29 +108,32 @@ class RedisClass {
         Eventbus.$emit("Redis.connected", false);
     }
     onMessage(message) {
-        var arr = JSON.parse(message.data);
-        var cmd = arr[0];
-        switch (cmd.toLowerCase()) {
-            case "pmessage":
-                this.subscriptions.forEach(subscription => {
-                    if (subscription.pattern == arr[1]) {
-                        subscription.callback(arr[2], JSON.parse(arr[3]));
-                    }
-                });
-                break;
+        console.log("Redis response: ", message.data);
+        try {
+            var arr = JSON.parse(message.data);
+            var cmd = arr[0];
+            switch (cmd.toLowerCase()) {
+                case "pmessage":
+                    this.subscriptions.forEach(subscription => {
+                        if (subscription.pattern == arr[1]) {
+                            subscription.callback(arr[2], JSON.parse(arr[3]));
+                        }
+                    });
+                    break;
 
-            default: {
-                console.log("Redis reply", arr);
-                let rp = this.promises.dequeue();
-                if (rp.cmd.toLowerCase() != cmd.toLowerCase()) {
-                    console.log("ERROR: ", rp.cmd, cmd);
-                    rp.reject("Redis reply error " + rp.cmd + " != " + cmd);
-                } else {
-                    rp.resolve(arr);
+                default: {
+                    console.log("Redis reply", arr);
+                    let rp = this.promises.dequeue();
+                    if (rp.cmd.toLowerCase() != cmd.toLowerCase()) {
+                        console.log("ERROR: ", rp.cmd, cmd);
+                        rp.reject("Redis reply error " + rp.cmd + " != " + cmd);
+                    } else {
+                        rp.resolve(arr);
+                    }
+                    break;
                 }
-                break;
             }
-        }
+        } catch (e) { console.log("Redis message exception", e, "on", message); }
     }
     subscribe(pattern, action) {
         this.subscriptions.push({ pattern: pattern, callback: action });

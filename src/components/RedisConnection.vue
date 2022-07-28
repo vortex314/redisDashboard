@@ -16,7 +16,7 @@
     <v-btn @click="gridLoad" :disabled="!RedisState.connected" color="primary">
       <v-icon>mdi-folder-arrow-down-outline</v-icon>
     </v-btn>
-    <v-btn @click="gridAdd" :disabled="!RedisState.connected" color="primary">
+    <v-btn @click="gridAdd"  color="primary">
       <v-icon>mdi-shape-rectangle-plus</v-icon>
     </v-btn>
     <v-btn @click="gridUnfreeze" color="primary">

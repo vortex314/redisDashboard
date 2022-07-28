@@ -9,7 +9,7 @@
           @contextmenu.native="rightClickHandler($event, item)">
         </component>
 
-        <span v-if="isRemovable" class="remove" @click="removeItem(item.i)">x</span>
+        <span v-if="isRemovable" class="remove" @click="removeItem(item.i)" >x</span>
       </grid-item>
     </grid-layout>
     <v-dialog v-model="showSelection" width="400" hight="600px">
@@ -28,6 +28,8 @@
 import { Redis, Eventbus } from "../Redis.js";
 import VueGridLayout from "vue-grid-layout";
 import EmptyGrid from "./EmptyGrid.vue";
+import ExtFrame from "./ExtFrame.vue";
+
 import RedisConnection from "./RedisConnection.vue";
 import SubLabel from "./SubLabel.vue";
 import SubAngle from "./SubAngle.vue";
@@ -79,6 +81,7 @@ export default {
       newConfig: {},
       currentItem: {},
       widgetList: [
+        "ExtFrame",
         "SubAngle",
         "SubButton",
         "SubGraph",
@@ -97,6 +100,7 @@ export default {
   components: {
     GridLayout,
     GridItem,
+    ExtFrame,
     RedisConnection,
     SubLabel,
     SubAngle,
@@ -125,18 +129,20 @@ export default {
     Redis.connect();
   },
   methods: {
+    /* eslint-disable */
     moveEvent: function (i, newX, newY) {
-      console.log("MOVE i=" + i + ", X=" + newX + ", Y=" + newY);
+//      console.log("MOVE i=" + i + ", X=" + newX + ", Y=" + newY);
     },
     resizeEvent: function (i, newH, newW) {
-      console.log("RESIZE i=" + i + ", H=" + newH + ", W=" + newW);
+ //     console.log("RESIZE i=" + i + ", H=" + newH + ", W=" + newW);
     },
     movedEvent: function (i, newX, newY) {
-      console.log("MOVED i=" + i + ", X=" + newX + ", Y=" + newY);
+//     console.log("MOVED i=" + i + ", X=" + newX + ", Y=" + newY);
     },
     resizedEvent: function (i, newH, newW) {
-      console.log("RESIZED i=" + i + ", H=" + newH + ", W=" + newW);
+//      console.log("RESIZED i=" + i + ", H=" + newH + ", W=" + newW);
     },
+    /* eslint-enable */
     addGridItem: function () {
       console.log("addGridItem");
       // Add a new item. It must have a unique key!

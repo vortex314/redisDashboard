@@ -1,9 +1,6 @@
 <template>
-  <iframe id="ifrm" :src="config.iframeSource" 
-  style="-webkit-transform:scale(1.0);-moz-transform-scale(0.5);" 
-  FRAMEBORDER="no" 
-  BORDER="0" 
-  SCROLLING="yes" />
+  <iframe id="ifrm" name="subFrame" :src="config.iframeSource" style="-webkit-transform:scale(1.0);border: 4px solid black;"
+    FRAMEBORDER="yes" BORDER="1" SCROLLING="yes" />
 </template>
 
 <script>
@@ -41,6 +38,17 @@ export default {
       this.key = newKey();
 
     },
+  },
+  mounted() {
+    console.log(document.getElementById("ifrm").contentWindow.document);
+    document.getElementById("ifrm").contentWindow.document.body.oncontextmenu = function () {
+      console.log("iframe loaded");
+      return false;
+    };
+   /* window.frames["ifrm"].document.oncontextmenu = function () {
+      console.log("disable context menu");
+      return false;
+    };*/
   },
   methods: {
     rightClickHandler(event, item) {

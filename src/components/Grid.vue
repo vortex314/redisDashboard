@@ -43,6 +43,7 @@ import TimeSeriesGraph from "./TimeSeriesGraph.vue";
 import PubSlider from "./PubSlider.vue";
 import SubIframe from "./SubIframe.vue";
 import SubGauge from "./SubGauge.vue";
+import SubActivity from "./SubActivity.vue";
 // import _ from "lodash";
 
 var GridLayout = VueGridLayout.GridLayout;
@@ -82,6 +83,7 @@ export default {
       currentItem: {},
       widgetList: [
         "ExtFrame",
+        "SubActivity",
         "SubAngle",
         "SubButton",
         "SubGraph",
@@ -103,6 +105,7 @@ export default {
     ExtFrame,
     RedisConnection,
     SubLabel,
+    SubActivity,
     SubAngle,
     SubGraph,
     SubGauge,

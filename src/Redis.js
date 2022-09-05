@@ -50,6 +50,12 @@ class RedisClass {
         this.onConnected = this.onConnected.bind(this);
         this.onMessage = this.onMessage.bind(this);
         this.promises = new Queue();
+        this.autoConnect = true;
+        this.connectionTimer = window.setInterval(() => {
+            if (!this.connected && this.autoConnect) {
+                this.connect();
+            }
+        },3000);
     }
     webSocketUrl() {
         return "ws://" + this.host + ":" + this.port + this.socketPath;
@@ -105,7 +111,7 @@ class RedisClass {
     onDisconnected() {
         console.log("Redis disconnected");
         RedisState.connected = false;
-        Eventbus.$emit("Redis.connected", false);
+        Eventbus.$emit("Redis.disconnected", false);
     }
     onMessage(message) {
         console.log("Redis response: ", message.data);

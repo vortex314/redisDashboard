@@ -44,6 +44,7 @@ import PubSlider from "./PubSlider.vue";
 import SubIframe from "./SubIframe.vue";
 import SubGauge from "./SubGauge.vue";
 import SubActivity from "./SubActivity.vue";
+import PubSubButton from "./PubSubButton.vue";
 // import _ from "lodash";
 
 var GridLayout = VueGridLayout.GridLayout;
@@ -91,6 +92,7 @@ export default {
         "SubIframe",
         "SubLabel",
         "SubTable",
+        "PubSubButton",
         "PubSubSwitch",
         "PubButton",
         "PubSlider",
@@ -113,6 +115,7 @@ export default {
     ConfigEditor,
     EmptyGrid,
     PubButton,
+    PubSubButton,
     PubSubSwitch,
     PubSlider,
     SubButton,

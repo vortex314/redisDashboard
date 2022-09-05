@@ -14,8 +14,8 @@ export default {
       type: Object,
       default: () => ({
         label: "LABELDUMMY",
-        topic: "TOPICDUMMY",
-        unit: "UNITDUMMY",
+        topic: "src/device/object/property",
+        unit: "SI Unit",
         timeout: 3000,
       }),
     },
@@ -54,7 +54,6 @@ export default {
       //    console.log("SubLabel.update topic:" + topic + " message:" + message);
       this.count++;
       this.value = message;
-      this.sub.resetTimer();
       this.classState = "m-0 p-0 text-center alive";
     },
     onTimeout() {

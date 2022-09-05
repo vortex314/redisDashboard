@@ -1,6 +1,6 @@
 <template>
   <v-card class="d-flex fill-height justify-center  outlined align-center" >
-    <v-btn :color="color"  elevation="3" width="98%" height="95%" >{{
+    <v-btn :color="color"  class="white--text" elevation="3" width="98%" height="95%" >{{
       config.label
     }}</v-btn>
   </v-card>

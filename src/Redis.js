@@ -198,10 +198,15 @@ class RedisClass {
         this.connected = false;
         RedisState.connected = false;
     }
+    configure(host, port, socketPath) {
+        this.host = host;
+        this.port = port;
+        this.socketPath = socketPath;
+    }
 
 }
 
-export const Redis = new RedisClass("limero.ddns.net", 9000, "/redis");
+export const Redis = new RedisClass("limero.local", 9000, "/redis");
 
 export const Eventbus = new Vue()
 

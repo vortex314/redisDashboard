@@ -16,7 +16,7 @@
     <v-btn @click="gridLoad" :disabled="!RedisState.connected" color="primary">
       <v-icon>mdi-folder-arrow-down-outline</v-icon>
     </v-btn>
-    <v-btn @click="gridAdd"  color="primary">
+    <v-btn @click="gridAdd" color="primary">
       <v-icon>mdi-shape-rectangle-plus</v-icon>
     </v-btn>
     <v-btn @click="gridUnfreeze" color="primary">
@@ -35,17 +35,14 @@ import { Redis, Eventbus, RedisState } from "../Redis.js";
 export default {
   name: "RedisConnection",
   props: {
-    host: {
-      type: String,
-      default: "host",
-    },
-    port: {
-      type: Number,
-      default: 666,
-    },
-    path: {
-      type: String,
-      default: "/redis",
+    config: {
+      type: Object,
+      default: () => ({
+        host: "localhost",
+        port: 9000,
+        path: "/redis",
+        dashboard:"default"
+      }),
     },
   },
   data() {
@@ -56,9 +53,20 @@ export default {
       RedisState,
     };
   },
+  watch: {
+    config: function (newVal, oldVal) {
+      console.log(newVal, oldVal);
+      Redis.autoConnect = false;
+      Redis.disconnect();
+      Redis.configure(this.config.host, this.config.port, this.config.path);
+      Redis.connect(this.config.host, this.config.port, this.config.path);
+      Redis.autoConnect = true;
+    },
+  },
   mounted() {
-    console.log("RedisConnection host:" + this.host + " port " + this.port);
+    console.log("RedisConnection host:" + this.config.host + " port " + this.config.port);
     console.log(JSON.stringify(this.$props));
+    Redis.configure(this.config.host, this.config.port, this.config.path);
     Eventbus.$on("Redis.connected", (connected) => {
       if (connected) {
         this.loadDashboards();
@@ -68,7 +76,7 @@ export default {
   methods: {
     loadDashboards() {
       Redis.request(["keys", "dashboard:*"]).then((data) => {
-        console.log("dashboard names:" ,data);
+        console.log("dashboard names:", data);
         var dashboards = data[1];
         if (Array.isArray(dashboards)) {
           dashboards.forEach((element) => {
@@ -82,7 +90,7 @@ export default {
       });
     },
     connect() {
-      Redis.connect(this.host, this.port, this.path);
+      Redis.connect();
     },
     disconnect() {
       Redis.disconnect();
@@ -103,7 +111,6 @@ export default {
       Eventbus.$emit("Grid.unfreeze");
     },
   },
-  watch: {},
 };
 </script>
 

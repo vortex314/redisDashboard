@@ -57,7 +57,7 @@ var testLayout = [
     h: 3,
     i: "item-0",
     type: "RedisConnection",
-    config: { host: "pcdell.local", port: 9000, path: "/redis" },
+    config: { host: "pcdell.local", port: 9000, path: "/redis",dashboard:"default" },
     moved: false,
   },
 ];

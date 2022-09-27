@@ -103,7 +103,7 @@ export default {
         manualUpdate: false,
         zlevel: 0,
         title: {
-          text: this.config.topic,
+          text: this.config.label,
           left: "center",
         },
         tooltip: {

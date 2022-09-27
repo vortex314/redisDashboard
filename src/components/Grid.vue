@@ -45,6 +45,7 @@ import SubIframe from "./SubIframe.vue";
 import SubGauge from "./SubGauge.vue";
 import SubActivity from "./SubActivity.vue";
 import PubSubButton from "./PubSubButton.vue";
+import PubSubRadioButton from "./PubSubRadioButton.vue";
 // import _ from "lodash";
 
 var GridLayout = VueGridLayout.GridLayout;
@@ -57,7 +58,7 @@ var testLayout = [
     h: 3,
     i: "item-0",
     type: "RedisConnection",
-    config: { host: "pcdell.local", port: 9000, path: "/redis",dashboard:"default" },
+    config: { config: { host: "pcdell.local", port: 9000, path: "/redis",dashboard:"default" }},
     moved: false,
   },
 ];
@@ -95,6 +96,7 @@ export default {
         "PubSubButton",
         "PubSubSwitch",
         "PubButton",
+        "PubSubRadioButton",
         "PubSlider",
         "TimeSeriesGraph"
       ],
@@ -116,6 +118,7 @@ export default {
     EmptyGrid,
     PubButton,
     PubSubButton,
+    PubSubRadioButton,
     PubSubSwitch,
     PubSlider,
     SubButton,

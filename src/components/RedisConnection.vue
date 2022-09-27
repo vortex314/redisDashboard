@@ -55,12 +55,13 @@ export default {
   },
   watch: {
     config: function (newVal, oldVal) {
-      console.log(newVal, oldVal);
+      console.log(this.config,newVal, oldVal);
       Redis.autoConnect = false;
       Redis.disconnect();
       Redis.configure(this.config.host, this.config.port, this.config.path);
-      Redis.connect(this.config.host, this.config.port, this.config.path);
+      Redis.connect();
       Redis.autoConnect = true;
+      this.dashboardName = this.config.dashboard;
     },
   },
   mounted() {

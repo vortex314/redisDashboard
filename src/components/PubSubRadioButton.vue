@@ -71,7 +71,7 @@ export default {
     onMessage(topic, message) {
       this.timedOut = false;
       let me = this;
-      this.config.values.find((value, index) => {
+      this.config.values.find((value) => {
         if (value == message) {
           me.buttonSelected = message;
         }

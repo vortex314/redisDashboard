@@ -1,7 +1,6 @@
 <template>
-  <div :key="key" :class="classState">{{ config.label }} : {{ value }} {{ config.unit }}</div>
+  <div :style="config.style" :key="key" :class="classState">{{ config.label }} : {{ value }} {{ config.unit }}</div>
 </template>
-
 <script>
 /*jshint esversion: 6 */
 
@@ -16,6 +15,8 @@ export default {
         label: "LABELDUMMY",
         topic: "src/device/object/property",
         unit: "SI Unit",
+        style:"font-size:20px;background-color:greeen;text-align:center;",
+        decimals:3,
         timeout: 3000,
       }),
     },
@@ -23,7 +24,6 @@ export default {
   data() {
     return {
       key:newKey(),
-      count: 0,
       value: 0,
       classState: "m-0 p-0 text-center dead",
       Redis,
@@ -51,9 +51,12 @@ export default {
   },
   methods: {
     onMessage(topic, message) {
-      //    console.log("SubLabel.update topic:" + topic + " message:" + message);
-      this.count++;
       this.value = message;
+      if ( !isNaN(message)   ) {
+        let d = parseFloat(message)
+        d = d.toFixed(this.decimals)
+        this.value = d.toString()
+      }
       this.classState = "m-0 p-0 text-center alive";
     },
     onTimeout() {

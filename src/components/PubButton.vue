@@ -1,6 +1,6 @@
 <template>
   <v-card class="d-flex fill-height justify-center outlined align-center">
-    <v-btn @click="buttonClicked">{{ config.label }}</v-btn>
+    <v-btn :style="config.style" :class="config.class" @click="buttonClicked">{{ config.label }}</v-btn>
   </v-card>
 </template>
 
@@ -14,6 +14,8 @@ export default {
         label: "BUTTON",
         dstTopic: "dst/device/object/prop",
         dstValue: "true",
+        style:"",
+        class:"text-button",
         timeout: 3000,
       }),
     },

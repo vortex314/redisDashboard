@@ -12,7 +12,7 @@
         <span v-if="isRemovable" class="remove" @click="removeItem(item.i)" >x</span>
       </grid-item>
     </grid-layout>
-    <v-dialog v-model="showSelection" width="400" hight="600px">
+    <v-dialog v-model="showSelection" width="400" height="600px">
       Select a widget to add to the grid
       <v-select :items="widgetList" v-model="index" label="Widget" @change="onSelect"></v-select>
     </v-dialog>

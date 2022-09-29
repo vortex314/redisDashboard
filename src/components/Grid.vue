@@ -9,8 +9,8 @@
           @contextmenu.native="rightClickHandler($event, item)">
         </component>
 
-        <span v-if="isRemovable" class="copy" @click="copyItem(item.i)" ><v-icon>mdi-content-copy</v-icon></span>
-        <span v-if="isRemovable" class="remove" @click="removeItem(item.i)" ><v-icon>mdi-trash-can-outline</v-icon></span>
+        <span v-if="isRemovable" class="copy" @click="copyItem(item.i)" ><v-icon x-small>mdi-content-copy</v-icon></span>
+        <span v-if="isRemovable" class="remove" @click="removeItem(item.i)" ><v-icon x-small>mdi-trash-can-outline</v-icon></span>
       </grid-item>
     </grid-layout>
     <v-dialog v-model="showSelection" width="400" height="600px">

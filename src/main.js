@@ -9,11 +9,17 @@ import vuetify from './plugins/vuetify';
 
 Vue.use(Vuetify);
 
+export default new Vuetify({
+  theme: { dark: true },
+})
+
+
 Vue.config.productionTip = false;
+
 
 new Vue({
   render: h => h(App),
-  vuetify:vuetify,
+  vuetify:vuetify
 }).$mount('#app');
 
 

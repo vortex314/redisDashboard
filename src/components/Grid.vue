@@ -9,7 +9,8 @@
           @contextmenu.native="rightClickHandler($event, item)">
         </component>
 
-        <span v-if="isRemovable" class="remove" @click="removeItem(item.i)" >x</span>
+        <span v-if="isRemovable" class="copy" @click="copyItem(item.i)" ><v-icon>mdi-content-copy</v-icon></span>
+        <span v-if="isRemovable" class="remove" @click="removeItem(item.i)" ><v-icon>mdi-trash-can-outline</v-icon></span>
       </grid-item>
     </grid-layout>
     <v-dialog v-model="showSelection" width="400" height="600px">
@@ -172,6 +173,12 @@ export default {
       const index = this.layout.map((item) => item.i).indexOf(val);
       this.layout.splice(index, 1);
     },
+    copyItem: function (val) {
+      const index = this.layout.map((item) => item.i).indexOf(val);
+      var item = JSON.parse(JSON.stringify(this.layout[index])); // deep copy
+      item.i = "item-" + Math.round(Math.random() * 1000000)
+      this.layout.push(item);
+    },
     rightClickHandler(event, item) {
       console.log(event, item);
       this.currentItem = item;
@@ -300,7 +307,14 @@ export default {
 
 .remove {
   position: absolute;
-  right: 2px;
+  right: 1px;
+  top: 0;
+  cursor: pointer;
+}
+
+.copy {
+  position: absolute;
+  right: 21px;
   top: 0;
   cursor: pointer;
 }

@@ -1,9 +1,10 @@
 <template>
   <v-card class="d-flex fill-height justify-center  outlined align-center">
-    <span bgcolor="onState ? 'green' : 'red'" style="font-size: 20px">
+
+    <v-container class="px-0" fluid>
+      <span bgcolor="onState ? 'green' : 'red'" style="font-size: 20px">
       {{ config.label }}
     </span>
-    <v-container class="px-0" fluid>
       <v-btn-toggle v-model="buttonSelected" background-color="blue"  >
         <v-btn v-for="idx in config.labels.length" 
         :key="idx" 

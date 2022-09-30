@@ -33,6 +33,7 @@ import ExtFrame from "./ExtFrame.vue";
 
 import RedisConnection from "./RedisConnection.vue";
 import SubLabel from "./SubLabel.vue";
+import SubLog from "./SubLog.vue";
 import SubAngle from "./SubAngle.vue";
 import SubGraph from "./SubGraph.vue";
 import SubTable from "./SubTable.vue";
@@ -93,6 +94,7 @@ export default {
         "SubGauge",
         "SubIframe",
         "SubLabel",
+        "SubLog",
         "SubTable",
         "PubSubButton",
         "PubSubSwitch",
@@ -110,6 +112,7 @@ export default {
     ExtFrame,
     RedisConnection,
     SubLabel,
+    SubLog,
     SubActivity,
     SubAngle,
     SubGraph,

@@ -1,36 +1,11 @@
 <template>
-  <v-card height="200px">
-      <v-toolbar card>
-        <v-toolbar-title>{{ config.label }}</v-toolbar-title>
-      </v-toolbar>
-
-      <v-divider></v-divider>
-
-      <v-card-text :style="config.style" :key="key">
-        <v-list>
-          <template v-for="i in logs.length"  >
-            <v-list-tile :key="i">
-              <v-list-tile-content>
-                <div>{{ logs[i-1] }}</div>
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-        </v-list>
-      </v-card-text>
-
-      <v-footer class="pa-2">Footer</v-footer>
-    </v-card>
+    <v-textarea  
+    :value="value" dense  row-height="12" background-color="white" color="primary" readonly success >
+    </v-textarea>
 </template>
 <script>
 /*jshint esversion: 6 */
 
-class LogRecord {
-  constructor(topic, message, timestamp) {
-    this.topic = topic;
-    this.message = message;
-    this.timestamp = timestamp;
-  }
-}
 
 import { Redis, Eventbus, Timer,newKey  } from "../Redis.js";
 import { Sub } from "../Sub.js";
@@ -40,19 +15,16 @@ export default {
     config: {
       type: Object,
       default: () => ({
-        label: "LABELDUMMY",
         topic: "src/device/object/property",
-        style:"font-size:20px;background-color:greeen;text-align:center;",
-        decimals:3,
+        style:"font-size:17px;background-color:black;color:green;text-align:center;line-height:1",
         timeout: 3000,
       }),
     },
   },
   data() {
     return {
-      logs:[],
       key:newKey(),
-      value: 0,
+      value: "\n====================\n",
       classState: "m-0 p-0 text-center dead",
       Redis,
       Eventbus,
@@ -79,7 +51,7 @@ export default {
   },
   methods: {
     onMessage(topic, message) {
-      this.logs.push(new LogRecord(topic, message, new Date().getTime()))
+      this.value = "\n"+new Date().toLocaleTimeString()+" | " +  message+this.value;
       this.classState = "m-0 p-0 text-center alive";
     },
     onTimeout() {

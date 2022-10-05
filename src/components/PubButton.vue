@@ -1,5 +1,5 @@
 <template>
-  <v-card class="d-flex fill-height justify-center outlined align-center">
+  <v-card class="test-body-2 d-flex fill-height justify-center outlined align-center">
     <v-btn :style="config.style" :class="config.class" @click="buttonClicked">{{ config.label }}</v-btn>
   </v-card>
 </template>
